@@ -22,3 +22,34 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+/.metadata/
+
+# Ignore Eclipse project files
+/.classpath
+/.project
+/.settings/
+
+# Ignore Eclipse local configuration files
+/.metadata/
+
+# Ignore Eclipse-specific build artifacts
+/bin/
+/.target/
+
+# Ignore compiled Java class files
+*.class
+
+# Ignore Eclipse's backup files
+*~ 
+*.bak
+
+# Ignore log files
+*.log
+
+# Ignore Maven or Gradle build directories (if applicable)
+/target/
+/build/
+
+# Ignore IDE-specific files (if using other IDEs like IntelliJ IDEA, NetBeans, etc.)
+.idea/
+*.iml
