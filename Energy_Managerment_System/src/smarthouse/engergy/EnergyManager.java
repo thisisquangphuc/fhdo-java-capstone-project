@@ -9,10 +9,21 @@ import smarthouse.devices.SmartDevice;
 import smarthouse.log.CustomLogger;
 
 public class EnergyManager {
+    // Static variable to hold the single instance
     private static EnergyManager instance;
 
     private final Map<String, EnergySource> energySources = new HashMap<>();
     private static final Logger logger = CustomLogger.getLogger();
+    
+    // Private constructor
+    private EnergyManager() {}
+    
+    public static synchronized EnergyManager getInstance() {
+        if (instance == null) {
+            instance = new EnergyManager();
+        }
+        return instance;
+    }
 
     // Add a new energy source
     public synchronized void addEnergySource(EnergySource source) {
@@ -37,13 +48,6 @@ public class EnergyManager {
     // Get an energy source by ID
     public synchronized EnergySource getEnergySource(String sourceID) {
         return energySources.get(sourceID);
-    }
-
-    public static synchronized EnergyManager getInstance() {
-        if (instance == null) {
-            instance = new EnergyManager();
-        }
-        return instance;
     }
     
     // Check if the energy source has sufficient energy to meet the required amount
