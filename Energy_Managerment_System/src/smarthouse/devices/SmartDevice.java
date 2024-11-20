@@ -17,6 +17,7 @@ public class SmartDevice implements Runnable {
     private final String engergyType;       // AC, DC, or other
     private Battery battery;                // Optional if device is battery powered
     private boolean isOn;
+    private boolean useIntegratedBattery = false;
     private Thread deviceThread;
     private double consumedEnergy;
     private String energySourceID;          // EnergyManager instance
@@ -97,6 +98,11 @@ public class SmartDevice implements Runnable {
         this.sourceName = EnergyManager.getInstance().getEnergySource(energySourceID).getSourceName();
     }
 
+    // Set the useIntegratedBattery
+    public void setUseIntegratedBattery(boolean useIntegratedBattery) {
+        this.useIntegratedBattery = useIntegratedBattery;
+    }
+
     public void turnOn() {
         if (!isOn) {
             isOn = true;
@@ -108,6 +114,7 @@ public class SmartDevice implements Runnable {
     public void turnOff() {
         if (isOn) {
             isOn = false;
+            this.useIntegratedBattery = false;
             // deviceThread.interrupt();
         }
     }
@@ -119,13 +126,23 @@ public class SmartDevice implements Runnable {
                 // Simulate random energy consumption rate (scaled by the simulation rate)
                 //int randomConsumption = new Random().nextInt(5) + 1;        // Consume between 1 and 5 units of energy per cycle
                 double randomConsumption = new Random().nextDouble(5) + 1;        // Consume between 1 and 5 units of energy per cycle
-                boolean success = EnergyManager.getInstance().distributeEnergy(this, randomConsumption);
-                if (success) {
-                    consumedEnergy += randomConsumption;
-                    logger.info(String.format("Device %s consumed %.2f kWh from %s", deviceName, randomConsumption, sourceName));
+                if (useIntegratedBattery) {
+                    if (!battery.discharge(randomConsumption)) {
+                        logger.warning(String.format("Battery of [%s] is empty!", deviceName));
+                        turnOff();
+                    } else {
+                        logger.info(String.format("Device [%s] consumed %.2f kWh from integrated battery", deviceName, randomConsumption));
+                    }
                 } else {
-                    // logger.warning(String.format("Device %s failed to consume %.2f kWh from %s", deviceName, randomConsumption, sourceName));
+                    boolean success = EnergyManager.getInstance().distributeEnergy(this, randomConsumption);
+                    if (success) {
+                        consumedEnergy += randomConsumption;
+                        logger.info(String.format("Device [%s] consumed %.2f kWh from [%s]", deviceName, randomConsumption, sourceName));
+                    } else {
+                        // logger.warning(String.format("Device %s failed to consume %.2f kWh from %s", deviceName, randomConsumption, sourceName));
+                    }
                 }
+                
                 // Adjust the sleep time based on the simulation rate
                 int sleepTime = (int) ((new Random().nextInt(2000) + 1000) * simulationRate); // Adjust sleep time based on simulation rate
                 
@@ -133,7 +150,7 @@ public class SmartDevice implements Runnable {
 
             } catch (InterruptedException e) {
                 // Thread was interrupted, exit the loop
-                logger.severe(String.format("Device %s interrupted: %s", deviceName, e.getMessage()));
+                logger.severe(String.format("Device [%s] interrupted: %s", deviceName, e.getMessage()));
                 Thread.currentThread().interrupt();
                 break;
             }

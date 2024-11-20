@@ -88,6 +88,7 @@ public class EnergyManager {
         }
     
         if (start) {
+            logger.info(String.format("Recharging energy source: %s --> ON", source.getSourceName()));
             source.startRecharging();
         } else {
             source.stopRecharging();

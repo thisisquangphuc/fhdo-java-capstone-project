@@ -82,9 +82,11 @@ public class EnergySource {
             /*if (amount > battery.getEnergyLevel()) {
              *   return false; // Insufficient energy for BATTERY or SOLAR
              *}
-            */
-            battery.discharge(amount);
-            return true;
+             */ 
+            if (!battery.discharge(amount)) {
+                logger.warning(String.format("Battery of [%s] is empty!", sourceName));
+            }
+            return battery.discharge(amount);
         }
 
         // For GRID, just record the energy consumption
@@ -119,9 +121,10 @@ public class EnergySource {
         rechargeThread = new Thread(() -> {
             while (isRecharging && isInRechargeTimeRange()) {
                 if (battery != null) {
+                    double amount = 10.0;
                     // Use the Battery's charge method
-                    battery.charge(10); // Recharge by 1 kWh (or any other unit)
-                    // logger.info(String.format("Battery of source %s recharged by 10 kWh. Current level: %.2f kWh", sourceID, battery.getEnergyLevel()));
+                    battery.charge(amount); // Recharge by 1 kWh (or any other unit)
+                    logger.info(String.format("Battery of source %s recharged by %.2f kWh. Current level: %.2f kWh", sourceID, amount, battery.getEnergyLevel()));
                 } else {
                     logger.warning(String.format("No battery available for source %s. Skipping recharge.", sourceID));
                 }
@@ -130,7 +133,6 @@ public class EnergySource {
                     Thread.sleep(1000); // Simulate a delay in recharging (1 second)
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                    logger.warning(String.format("Recharging thread for %s interrupted.", sourceID));
                 }
             }
 
@@ -167,7 +169,7 @@ public class EnergySource {
     // Status string
     public synchronized String getStatus() {
         // return in json format
-        return String.format("{source_id=%s, source_type=%s, capacity_kWh=%.2f, available_energy_kWh=%.2f, percentage=%s}", sourceID, sourceType, 
+        return String.format("{source_name=%s, source_type=%s, capacity_kWh=%.2f, available_energy_kWh=%.2f, percentage=%s}", sourceName, sourceType, 
         battery == null ? 0 : battery.getCapacity(),
         battery == null ? 0 : battery.getEnergyLevel(),
         battery == null ? 0 : battery.getBatteryPercentage());

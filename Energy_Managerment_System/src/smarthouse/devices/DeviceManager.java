@@ -1,7 +1,9 @@
 package smarthouse.devices;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import smarthouse.log.CustomLogger;
@@ -32,8 +34,13 @@ public class DeviceManager {
         devices.remove(deviceID);
     }
 
-    public void turnOnDevice(SmartDevice device) {
+    public void turnOnDevice(SmartDevice device,boolean useIntegratedBattery) {
         if (!device.isOn()) {
+            if (useIntegratedBattery) {
+                device.setUseIntegratedBattery(true);
+            } else {
+                device.setUseIntegratedBattery(false);
+            }
             device.turnOn();
             logger.info(String.format("Device %s is now ON.", device.getDeviceName()));
         } else {
@@ -51,7 +58,7 @@ public class DeviceManager {
     }
     
     // Retrieve a device by ID
-    public synchronized SmartDevice getDevice(String deviceID) {
+    public synchronized SmartDevice getDeviceByID(String deviceID) {
         return devices.get(deviceID);
     }
 
@@ -64,4 +71,12 @@ public class DeviceManager {
         return status.toString();
     }
 
+    // Get all devices return in a list 
+    public synchronized List<String> getAllDevicesNames() {
+        List<String> devicesList = new ArrayList<>();
+        for (SmartDevice device : devices.values()) {
+            devicesList.add(device.getDeviceName());
+        }
+        return devicesList;
+    }
 }

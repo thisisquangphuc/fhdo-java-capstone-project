@@ -29,12 +29,12 @@ public class Battery {
         if (amount <= 0) {
             throw new IllegalArgumentException("Energy amount must be positive.");
         }
-        energyLevel = Math.min(energyLevel+amount, capacity);
-        logger.info(String.format("Battery %s recharged by %.2f, current energy level: %.2f", id, amount, energyLevel));
+        energyLevel = Math.min(energyLevel + amount, capacity);
+        // logger.info(String.format("Battery <%s> recharged by %.2f, current energy level: %.2f", id, amount, energyLevel));
     }
 
     // Synchronized method for consuming energy
-    public synchronized void discharge(double amount) {
+    public synchronized boolean discharge(double amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException("Energy amount must be positive.");
         }
@@ -42,7 +42,12 @@ public class Battery {
         *    throw new IllegalStateException("Insufficient energy to consume " + amount);
         *}
         */
+        if (energyLevel == 0) {
+            return false;
+        }
+        
         energyLevel = Math.max(energyLevel - amount, 0);
+        return true;
         // logger.info(String.format("Battery %d discharged by %.0f, current energy level: %.0f", id, amount, energyLevel));
     }
     
