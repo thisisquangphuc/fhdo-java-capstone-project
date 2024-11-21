@@ -34,6 +34,7 @@ public class EnergyManager {
         logger.info(String.format("Energy source status: %s", source.getStatus()));
     }
 
+
     // Remove an energy source by ID
     public synchronized boolean removeEnergySource(String sourceID) {
         if (energySources.containsKey(sourceID)) {
@@ -121,5 +122,21 @@ public class EnergyManager {
             sourceIDs.add(source.getSourceID());
         }
         return sourceIDs;
+    }
+
+    // Get energy source ID by source name
+    public synchronized String getEnergySourceIDByName(String sourceName) {
+        if (sourceName == null || sourceName.isEmpty()) {
+            throw new IllegalArgumentException("Source name cannot be null or empty.");
+        }
+
+        for (EnergySource source : energySources.values()) {
+            if (source.getSourceName().equalsIgnoreCase(sourceName)) {
+                return source.getSourceID();
+            }
+        }
+
+        logger.warning(String.format("No energy source found with name: %s", sourceName));
+        return null; // Return null if no matching source is found
     }
 }

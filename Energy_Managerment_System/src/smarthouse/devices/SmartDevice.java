@@ -169,12 +169,17 @@ public class SmartDevice implements Runnable {
     }
 
     public String getStatus() {
-        // return as a json format but in string type
         return "{" +
-                "deviceId='" + deviceId + '\'' +
-                ", deviceName='" + deviceName + '\'' +
-                ", isActive=" + isOn +
-                ", battery=" + (battery != null ? battery.getStatus() : "No Battery") +
-                '}';
+                "\"deviceId\":\"" + deviceId + "\"," +
+                "\"deviceName\":\"" + deviceName + "\"," +
+                "\"isActive\":" + isOn + "," +
+                "\"energyType\":\"" + engergyType + "\"," +
+                "\"batteryStatus\":" + (battery != null ? battery.getStatus() : "\"No Battery\"") + "," +
+                // "\"useIntegratedBattery\":" + useIntegratedBattery + "," +
+                // "\"energySourceID\":\"" + (energySourceID != null ? energySourceID : "None") + "\"," +
+                "\"energySourceName\":\"" + (sourceName != null ? sourceName : "None") + "\"," +
+                "\"consumedEnergy\":" + consumedEnergy + "," +
+                "\"simulationRate\":" + simulationRate +
+                "}";
     }
 }

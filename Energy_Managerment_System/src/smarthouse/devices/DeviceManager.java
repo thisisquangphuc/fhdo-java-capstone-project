@@ -80,4 +80,13 @@ public class DeviceManager {
         }
         return devicesList;
     }
+
+    // get list of all devices IDs
+    public synchronized List<String> getAllDevicesIDs() {
+        List<String> devicesList = new ArrayList<>();
+        for (SmartDevice device : devices.values()) {
+            devicesList.add(device.getDeviceId());
+        }
+        return devicesList;
+    }
 }

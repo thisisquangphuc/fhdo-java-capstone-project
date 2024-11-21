@@ -125,7 +125,7 @@ public class EnergySource {
                     double amount = 10.0;
                     // Use the Battery's charge method
                     battery.charge(amount); // Recharge by 1 kWh (or any other unit)
-                    logger.info(String.format("Battery of source %s recharged by %.2f kWh. Current level: %.2f kWh", sourceID, amount, battery.getEnergyLevel()));
+                    logger.info(String.format("Battery of source [%s] recharged by %.2f kWh. Current level: %.2f kWh", sourceName, amount, battery.getEnergyLevel()));
                 } else {
                     logger.warning(String.format("No battery available for source %s. Skipping recharge.", sourceID));
                 }
@@ -169,10 +169,12 @@ public class EnergySource {
 
     // Status string
     public synchronized String getStatus() {
-        // return in json format
-        return String.format("{source_name=%s, source_type=%s, capacity_kWh=%.2f, available_energy_kWh=%.2f, percentage=%s}", sourceName, sourceType, 
-        battery == null ? 0 : battery.getCapacity(),
-        battery == null ? 0 : battery.getEnergyLevel(),
-        battery == null ? 0 : battery.getBatteryPercentage());
+        return "{" +
+                "\"sourceName\":\"" + sourceName + "\"," +
+                "\"sourceType\":\"" + sourceType + "\"," +
+                "\"isRecharging\":" + isRecharging + "," +
+                // "\"rechargeRate_kWh\":" + rechargeRate + "," +
+                "\"batteryStatus\":" + (battery != null ? battery.getStatus() : "\"No Battery\"") +
+                "}";
     }
 }
