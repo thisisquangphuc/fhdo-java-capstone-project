@@ -101,6 +101,9 @@ public class Main {
 			List<String> sourceNames = energyManager.getEnergySourceNames();
 			for (String name : sourceNames) {
 				logger.info(name);
+				// print source id for each source name
+				String sourceID = energyManager.getEnergySourceIDByName(name);
+				logger.info(sourceID);
 			}
 			// Get all devices names
 			List<String> deviceNames = deviceManager.getAllDevicesNames();
