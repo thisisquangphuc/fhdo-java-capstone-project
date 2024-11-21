@@ -46,29 +46,37 @@ public class Main {
 	
 			// Create Engery Sources
 			Battery battery1 = new Battery(100, 70);
-			EnergySource powerBank = new EnergySource("Power Bank", EnergySource.EnergyType.BATTERY.name(), battery1);
+			EnergySource powerBank = new EnergySource("Power Bank", EnergySource.EnergyType.BATTERY, battery1);
 	
 			Battery battery2 = new Battery(1000, 1);
-			EnergySource solar = new EnergySource("Home Solar", EnergySource.EnergyType.SOLAR.name(), battery2);
+			EnergySource solar = new EnergySource("Home Solar", EnergySource.EnergyType.SOLAR, battery2);
 	
-			EnergySource grid = new EnergySource("Grid Power", EnergySource.EnergyType.GRID.name());
+			EnergySource grid = new EnergySource("Grid Power", EnergySource.EnergyType.GRID);
 			
 			// Add energy sources to the EnergyManager
 			energyManager.addEnergySource(powerBank);
 			energyManager.addEnergySource(solar);
 			energyManager.addEnergySource(grid);
 			
+			// Print all energy sources ID
+			List<String> energySourceIDs = energyManager.getEnergySourceIDs();
+			for (String id : energySourceIDs) {
+				System.out.println(id);
+				//get name of the energy source
+				EnergySource energySource = energyManager.getEnergySourceByID(id);
+				System.out.println(energySource.getSourceName());
+			}
 			/* Device Manager */
 			DeviceManager deviceManager = new DeviceManager();
 	
 			// Create SmartDevices
-			SmartDevice fan = new SmartDevice("Living Room Fan", EnergySource.EnergyType.BATTERY.name());
-			SmartDevice cooler = new SmartDevice("Bedroom Cooler", EnergySource.EnergyType.SOLAR.name());
-			SmartDevice heater = new SmartDevice("Living Room Heater", EnergySource.EnergyType.GRID.name());
+			SmartDevice fan = new SmartDevice("Living Room Fan", SmartDevice.EnergyType.DC);
+			SmartDevice cooler = new SmartDevice("Bedroom Cooler", SmartDevice.EnergyType.DC);
+			SmartDevice heater = new SmartDevice("Living Room Heater", SmartDevice.EnergyType.AC);
 
 			// Create device having integrated battery
 			Battery ringBatt = new Battery(100, 70);
-			SmartDevice ring = new SmartDevice("Door Ring", EnergySource.EnergyType.BATTERY.name(), ringBatt);
+			SmartDevice ring = new SmartDevice("Door Ring", SmartDevice.EnergyType.DC, ringBatt);
 	
 			// Assign energy sources to devices
 			fan.setEnergySource(solar);
