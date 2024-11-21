@@ -1,8 +1,12 @@
 package smarthouse.ui;
 
 import javax.swing.*;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
+import smarthouse.engergy.EnergyManager;
 import smarthouse.log.CustomLogger;
 
 @SuppressWarnings("serial")
@@ -10,12 +14,12 @@ public class EnergySourceManagementUI extends JPanel {
     /**
      * Creates new form EnergySourceManagementUI
      */
-    public EnergySourceManagementUI(EnergySource energySources) { //throws IOException {
-        this.energySource = energySources;
+    public EnergySourceManagementUI(EnergyManager energyManager) { //throws IOException {
+        this.energyManager = energyManager;
     	initComponents();
     }
     
-	EnergySource energySource;
+	EnergyManager energyManager;
 	Logger logger = CustomLogger.getLogger();
 	
 	 /**
@@ -26,12 +30,13 @@ public class EnergySourceManagementUI extends JPanel {
     
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
+    	List<String> sourceNames = this.energyManager.getEnergySourceNames();
 
         this.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         this.setMaximumSize(new java.awt.Dimension(1500, 1000));
         
         // 
-    	for (int i=0; i<this.energySource.getList().length; i++) {
+    	for (int i=0; i<sourceNames.size(); i++) {
 	        energySourcePanel[i] = new javax.swing.JPanel();
 	        energySourceLabel[i] = new javax.swing.JLabel();
 	        supplyAmountSource[i] = new javax.swing.JLabel();
@@ -46,7 +51,7 @@ public class EnergySourceManagementUI extends JPanel {
 	
 	        energySourceLabel[i].setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
 	        energySourceLabel[i].setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-	        energySourceLabel[i].setText("Energy Source " + this.energySource.getList()[i]); // [FIXME] energySource.getName()
+	        energySourceLabel[i].setText(sourceNames.get(i)); // [FIXME] energySource.getName()
 	        energySourceLabel[i].setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 	        energySourceLabel[i].setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 	
@@ -108,9 +113,9 @@ public class EnergySourceManagementUI extends JPanel {
 	                                .addComponent(chargeBtnSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))))
 	                    .addGroup(energySourcePanelLayout.createSequentialGroup()
 	                        .addGap(98, 98, 98)
-	                        .addComponent(energySourceLabel[i], javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-	                        .addGap(18, 18, 18)
-	                        .addComponent(removeBtnSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
+	                        .addComponent(energySourceLabel[i], javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                        .addGap(28, 28, 28)
+	                        .addComponent(removeBtnSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
 	                .addContainerGap(14, Short.MAX_VALUE))
 	        );
 	        energySourcePanelLayout.setVerticalGroup(
@@ -141,7 +146,7 @@ public class EnergySourceManagementUI extends JPanel {
         
         javax.swing.GroupLayout.ParallelGroup horizontalEvenGroup 	= energySourceMgmtPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false);
         javax.swing.GroupLayout.ParallelGroup horizontalOddGroup 	= energySourceMgmtPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false);
-        for (int i=energySource.getList().length-1; i>=0; i--) {
+        for (int i=sourceNames.size()-1; i>=0; i--) {
         	if((i%2)==1) {
         		horizontalOddGroup.addComponent(energySourcePanel[i], javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
         	} else {
@@ -159,15 +164,15 @@ public class EnergySourceManagementUI extends JPanel {
         );
         
         javax.swing.GroupLayout.SequentialGroup verticalSeqGroup = energySourceMgmtPanelLayout.createSequentialGroup();
-        javax.swing.GroupLayout.ParallelGroup[] verticalGroup = new javax.swing.GroupLayout.ParallelGroup[energySource.getList().length/2+1]; 
-        for (int i=0; i<energySource.getList().length; i++) { 
+        javax.swing.GroupLayout.ParallelGroup[] verticalGroup = new javax.swing.GroupLayout.ParallelGroup[sourceNames.size()/2+1]; 
+        for (int i=0; i<sourceNames.size(); i++) { 
         	if ((i%2)==0) verticalGroup[i/2] = energySourceMgmtPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false);
         	verticalGroup[i/2].addComponent(energySourcePanel[i], javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
         }
         verticalSeqGroup.addContainerGap(20, Short.MAX_VALUE);
-        for (int i=0; i<energySource.getList().length; i++) { 
+        for (int i=0; i<sourceNames.size(); i++) { 
         	if ((i%2)==0) verticalSeqGroup.addGroup(verticalGroup[i/2]);
-        	else if (i!=(energySource.getList().length-1)) verticalSeqGroup.addGap(20, 20, 20);
+        	else if (i!=(sourceNames.size()-1)) verticalSeqGroup.addGap(20, 20, 20);
         }
         verticalSeqGroup.addContainerGap(20, Short.MAX_VALUE);
         energySourceMgmtPanelLayout.setVerticalGroup(
