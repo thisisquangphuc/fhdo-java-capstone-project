@@ -11,6 +11,7 @@ import smarthouse.engergy.Battery;
 import smarthouse.engergy.EnergyManager;
 import smarthouse.engergy.EnergySource;
 import smarthouse.log.CustomLogger;
+import smarthouse.ui.UIManagingSmartObjects;
 import smarthouse.util.AsciiArtPrinter;
 
 /**
@@ -119,6 +120,7 @@ public class Main {
 				logger.info(device.getStatus());
 			}
 
+			new UIManagingSmartObjects(energyManager).setVisible(true);
 			
 			/* Turn on devices though the DeviceManager */
 			// deviceManager.turnOnDevice(heater);
