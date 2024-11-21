@@ -7,6 +7,8 @@
  *
  * @author Van Dao
  */
+package smarthouse.ui;
+
 import java.awt.Image;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -14,6 +16,7 @@ import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+
 public class UIManagingSmartObjects extends javax.swing.JFrame {
 
     /**
@@ -27,11 +30,11 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     
     public void scaleImage() throws IOException{
         //String currentPath = new java.io.File(".").getCanonicalPath();
-        ImageIcon iconFan = new ImageIcon(getClass().getResource("/Icon/fanon.png"));
-        ImageIcon iconLightBulb = new ImageIcon(getClass().getResource("/Icon/light.png"));
-        ImageIcon iconHeater = new ImageIcon(getClass().getResource("/Icon/heateron.png"));
-        ImageIcon iconEnergy = new ImageIcon(getClass().getResource("/Icon/energy.png"));
-        ImageIcon iconBackground = new ImageIcon(getClass().getResource("/Icon/smarthome2.jpg"));
+        ImageIcon iconFan = new ImageIcon(getClass().getResource("Icon/fanon.png"));
+        ImageIcon iconLightBulb = new ImageIcon(getClass().getResource("Icon/light.png"));
+        ImageIcon iconHeater = new ImageIcon(getClass().getResource("Icon/heateron.png"));
+        ImageIcon iconEnergy = new ImageIcon(getClass().getResource("Icon/energy.png"));
+        ImageIcon iconBackground = new ImageIcon(getClass().getResource("Icon/smarthome2.jpg"));
         // scaling image fan
         Image imgFan = iconFan.getImage();
         Image imageScaleFan = imgFan.getScaledInstance(fan.getWidth(), fan.getHeight(), Image.SCALE_SMOOTH);
@@ -92,7 +95,6 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         labelLightRate = new javax.swing.JLabel();
         labelHeaterConsum = new javax.swing.JLabel();
         labelLightConsum = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setSize(new java.awt.Dimension(100, 100));
@@ -357,18 +359,9 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 
         jTabbedPane.addTab("Devices Management", jPanel2);
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 760, Short.MAX_VALUE)
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 491, Short.MAX_VALUE)
-        );
+		this.energySourceMgmtPanel = new EnergySourceManagementUI(sourceList); // [FIXME] should be energySource from constructor
 
-        jTabbedPane.addTab("Energy Source Management", jPanel3);
+        jTabbedPane.addTab("Energy Source Management", this.energySourceMgmtPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -476,6 +469,7 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         });
     }
 
+    private EnergySourceManagementUI energySourceMgmtPanel; 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton devicesButton;
     private javax.swing.JButton energyButton;
@@ -487,7 +481,6 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JTabbedPane jTabbedPane;
     private javax.swing.JLabel labelFanConsum;
     private javax.swing.JLabel labelFanRate;
