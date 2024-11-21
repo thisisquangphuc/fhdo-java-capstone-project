@@ -46,7 +46,7 @@ public class EnergyManager {
     }
 
     // Get an energy source by ID
-    public synchronized EnergySource getEnergySource(String sourceID) {
+    public synchronized EnergySource getEnergySourceByID(String sourceID) {
         return energySources.get(sourceID);
     }
     
@@ -112,5 +112,14 @@ public class EnergyManager {
             sourceNames.add(source.getSourceName());
         }
         return sourceNames;
+    }
+
+    // Get list of all energy source IDs
+    public synchronized List<String> getEnergySourceIDs() {
+        List<String> sourceIDs = new ArrayList<>();
+        for (EnergySource source : energySources.values()) {
+            sourceIDs.add(source.getSourceID());
+        }
+        return sourceIDs;
     }
 }
