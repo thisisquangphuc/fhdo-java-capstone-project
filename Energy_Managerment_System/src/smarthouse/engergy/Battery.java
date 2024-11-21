@@ -73,6 +73,6 @@ public class Battery {
     // Get status
     public synchronized String getStatus() {
         // in json format
-        return String.format("{battery_id=%s, capacity_kWh= %.1f, energy_level_kWh= %.1f}", id, capacity, energyLevel);
+        return String.format("{battery_id=%s, capacity_kWh= %.1f, energy_level_kWh= %.1f, percentage=%s}", id, capacity, energyLevel, getBatteryPercentage());
     }
 }
