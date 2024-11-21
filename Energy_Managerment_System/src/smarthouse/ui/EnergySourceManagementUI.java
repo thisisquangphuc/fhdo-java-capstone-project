@@ -2,6 +2,7 @@ package smarthouse.ui;
 
 import javax.swing.*;
 
+import java.awt.AWTException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -10,7 +11,11 @@ import smarthouse.engergy.EnergyManager;
 import smarthouse.log.CustomLogger;
 
 @SuppressWarnings("serial")
-public class EnergySourceManagementUI extends JPanel {
+public class EnergySourceManagementUI extends JPanel implements Runnable {
+	
+	private EnergyManager energyManager;
+	private static final Logger logger = CustomLogger.getLogger();
+	
     /**
      * Creates new form EnergySourceManagementUI
      */
@@ -18,9 +23,6 @@ public class EnergySourceManagementUI extends JPanel {
         this.energyManager = energyManager;
     	initComponents();
     }
-    
-	EnergyManager energyManager;
-	Logger logger = CustomLogger.getLogger();
 	
 	 /**
      * This method is called from within the constructor to initialize the form.
@@ -35,16 +37,16 @@ public class EnergySourceManagementUI extends JPanel {
         this.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         this.setMaximumSize(new java.awt.Dimension(1500, 1000));
         
-        // 
+        // Create Panel Display for each energy source
     	for (int i=0; i<sourceNames.size(); i++) {
 	        energySourcePanel[i] = new javax.swing.JPanel();
 	        energySourceLabel[i] = new javax.swing.JLabel();
-	        supplyAmountSource[i] = new javax.swing.JLabel();
+	        energyConsumedAmount[i] = new javax.swing.JLabel();
 	        remainingBarSource[i] = new javax.swing.JProgressBar();
-	        remainingLabelSource[i] = new javax.swing.JLabel();
+	        remainingLabel[i] = new javax.swing.JLabel();
 	        deviceComsumingSource[i] = new javax.swing.JLabel();
-	        removeBtnSource[i] = new javax.swing.JButton();
-	        chargeBtnSource[i] = new javax.swing.JButton();
+	        removeSourceBtn[i] = new javax.swing.JButton();
+	        chargeSourceBtn[i] = new javax.swing.JButton();
 	
 	        energySourcePanel[i].setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
 	        energySourcePanel[i].setName(""); // NOI18N
@@ -55,21 +57,22 @@ public class EnergySourceManagementUI extends JPanel {
 	        energySourceLabel[i].setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 	        energySourceLabel[i].setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 	
-	        supplyAmountSource[i].setBackground(new java.awt.Color(255, 255, 255));
-	        supplyAmountSource[i].setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-	        supplyAmountSource[i].setText("Current supply amount: ");
-	        supplyAmountSource[i].setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+	        energyConsumedAmount[i].setBackground(new java.awt.Color(255, 255, 255));
+	        energyConsumedAmount[i].setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+    		energyConsumedAmount[i].setText(
+    				String.format("Current energy consumed amount: \t %s kwH", Math.round(100*Math.random()%100))); // [FIXME] getComsumedAmount
+	        energyConsumedAmount[i].setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 	
 	        // if pin battery or solar panel
 	        remainingBarSource[i].setToolTipText("");
 	        remainingBarSource[i].setValue((int)Math.round(100*Math.random()%100)); // [FIXME] getRemainingAmount
 	        remainingBarSource[i].setStringPainted(true);
 	
-	        remainingLabelSource[i].setText("Remaining amount:");
+	        remainingLabel[i].setText("Remaining amount:");
 	
 	        deviceComsumingSource[i].setBackground(new java.awt.Color(255, 255, 255));
 	        deviceComsumingSource[i].setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-	        deviceComsumingSource[i].setText("Being consumed by:");
+	        deviceComsumingSource[i].setText("Being consumed by:"); // [FIXME] getDeviceComsuming
 	        deviceComsumingSource[i].setVerticalAlignment(javax.swing.SwingConstants.TOP);
 	
 	        final JButton removeBtn = new JButton();
@@ -78,10 +81,10 @@ public class EnergySourceManagementUI extends JPanel {
 	        removeBtn.setName(Integer.toString(i));
 	        removeBtn.addActionListener(new java.awt.event.ActionListener() {
 	            public void actionPerformed(java.awt.event.ActionEvent evt) {
-	                removeBtnSourceActionPerformed(evt, Integer.parseInt(removeBtn.getName()));
+	                removeSourceBtnActionPerformed(evt, Integer.parseInt(removeBtn.getName()));
 	            }
 	        });
-	        removeBtnSource[i] = removeBtn;
+	        removeSourceBtn[i] = removeBtn;
 	
 	        // if pin battery or solar panel 
 	        final JButton chargeBtn = new JButton();
@@ -89,68 +92,136 @@ public class EnergySourceManagementUI extends JPanel {
 	        chargeBtn.setName(Integer.toString(i));
 	        chargeBtn.addActionListener(new java.awt.event.ActionListener() {
 	            public void actionPerformed(java.awt.event.ActionEvent evt) {
-	                chargeBtnSourceActionPerformed(evt, Integer.parseInt(chargeBtn.getName()));
+	                chargeSourceBtnActionPerformed(evt, Integer.parseInt(chargeBtn.getName()));
 	            }
 	        });
-	        chargeBtnSource[i] = chargeBtn;
+	        chargeSourceBtn[i] = chargeBtn;
 	
-	        javax.swing.GroupLayout energySourcePanelLayout = new javax.swing.GroupLayout(energySourcePanel[i]);
-	        energySourcePanel[i].setLayout(energySourcePanelLayout);
-	        energySourcePanelLayout.setHorizontalGroup(
-	            energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	            .addGroup(energySourcePanelLayout.createSequentialGroup()
-	                .addGroup(energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	                    .addGroup(energySourcePanelLayout.createSequentialGroup()
-	                        .addGap(10, 10, 10)
-	                        .addGroup(energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	                            .addComponent(deviceComsumingSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-	                            .addComponent(supplyAmountSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-	                            .addGroup(energySourcePanelLayout.createSequentialGroup()
-	                                .addComponent(remainingLabelSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-	                                .addComponent(remainingBarSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
-	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-	                                .addComponent(chargeBtnSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))))
-	                    .addGroup(energySourcePanelLayout.createSequentialGroup()
-	                        .addGap(98, 98, 98)
-	                        .addComponent(energySourceLabel[i], javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-	                        .addGap(28, 28, 28)
-	                        .addComponent(removeBtnSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
-	                .addContainerGap(14, Short.MAX_VALUE))
-	        );
-	        energySourcePanelLayout.setVerticalGroup(
-	            energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-	            .addGroup(energySourcePanelLayout.createSequentialGroup()
-	                .addContainerGap()
-	                .addGroup(energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                    .addComponent(energySourceLabel[i])
-	                    .addComponent(removeBtnSource[i]))
-	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-	                .addGroup(energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                    .addComponent(remainingLabelSource[i])
-	                    .addComponent(remainingBarSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-	                    .addComponent(chargeBtnSource[i]))
-	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-	                .addComponent(supplyAmountSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-	                .addComponent(deviceComsumingSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-	                .addContainerGap())
-	        );
+	        if (sourceNames.get(i) != "Grid Power") {
+		        javax.swing.GroupLayout energySourcePanelLayout = new javax.swing.GroupLayout(energySourcePanel[i]);
+		        energySourcePanel[i].setLayout(energySourcePanelLayout);
+		        energySourcePanelLayout.setHorizontalGroup(
+		            energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+		            .addGroup(energySourcePanelLayout.createSequentialGroup()
+		                .addGroup(energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+		                    .addGroup(energySourcePanelLayout.createSequentialGroup()
+		                        .addGap(10, 10, 10)
+		                        .addGroup(energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+		                            .addComponent(deviceComsumingSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+		                            .addComponent(energyConsumedAmount[i], javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+		                            .addGroup(energySourcePanelLayout.createSequentialGroup()
+		                                .addComponent(remainingLabel[i], javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+		                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+		                                .addComponent(remainingBarSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+		                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+		                                .addComponent(chargeSourceBtn[i], javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))))
+		                    .addGroup(energySourcePanelLayout.createSequentialGroup()
+		                        .addGap(113, 113, 113)
+		                        .addComponent(energySourceLabel[i], javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+		                        .addGap(35, 35, 35)
+		                        .addComponent(removeSourceBtn[i], javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
+		                .addContainerGap(14, Short.MAX_VALUE))
+		        );
+		        energySourcePanelLayout.setVerticalGroup(
+		            energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+		            .addGroup(energySourcePanelLayout.createSequentialGroup()
+		                .addContainerGap()
+		                .addGroup(energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+		                    .addComponent(energySourceLabel[i])
+		                    .addComponent(removeSourceBtn[i], javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+		                .addGap(20, 20, 20)
+		                .addGroup(energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+		                    .addComponent(remainingLabel[i])
+		                    .addComponent(remainingBarSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+		                    .addComponent(chargeSourceBtn[i], javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+		                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+		                .addComponent(energyConsumedAmount[i])
+		                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+		                .addComponent(deviceComsumingSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+		                .addContainerGap())
+		        );
+	        } else {
+	        	javax.swing.GroupLayout energySourcePanelLayout = new javax.swing.GroupLayout(energySourcePanel[i]);
+		        energySourcePanel[i].setLayout(energySourcePanelLayout);
+		        energySourcePanelLayout.setHorizontalGroup(
+		            energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+		            .addGroup(energySourcePanelLayout.createSequentialGroup()
+		                .addGroup(energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+		                    .addGroup(energySourcePanelLayout.createSequentialGroup()
+		                        .addGap(10, 10, 10)
+		                        .addGroup(energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+		                            .addComponent(deviceComsumingSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+		                            .addComponent(energyConsumedAmount[i], javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+//		                            .addGroup(energySourcePanelLayout.createSequentialGroup()
+//		                                .addComponent(remainingLabel[i], javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+//		                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+//		                                .addComponent(remainingBarSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+//		                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+//		                                .addComponent(chargeSourceBtn[i], javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))))
+		                            ))
+		                    .addGroup(energySourcePanelLayout.createSequentialGroup()
+		                        .addGap(113, 113, 113)
+		                        .addComponent(energySourceLabel[i], javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+		                        .addGap(35, 35, 35)
+		                        .addComponent(removeSourceBtn[i], javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
+		                .addContainerGap(14, Short.MAX_VALUE))
+		        );
+		        energySourcePanelLayout.setVerticalGroup(
+			            energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			            .addGroup(energySourcePanelLayout.createSequentialGroup()
+			                .addContainerGap()
+			                .addGroup(energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+			                    .addComponent(energySourceLabel[i])
+			                    .addComponent(removeSourceBtn[i], javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+			                .addGap(30, 30, 30)
+//			                .addGroup(energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+//			                    .addComponent(remainingLabel[i])
+//			                    .addComponent(remainingBarSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+//			                    .addComponent(chargeSourceBtn[i], javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+			                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			                .addComponent(energyConsumedAmount[i])
+			                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+			                .addComponent(deviceComsumingSource[i], javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+			                .addContainerGap())
+			        );
+	        }
         
         	this.add(energySourcePanel[i]);
     	}
-
+    	
+    	updateEnergySourceUI();
+    }// </editor-fold>   
+    
+    
+    // Update UI when data change
+    public synchronized void updateEnergySourceUI() {
+    	int numOfSourcePanel = this.getComponentCount();
+    	
+    	// Update value for current available energy sources
+    	for (int i=0; i< numOfSourcePanel; i++) {
+//    		remainingBarSource[i].setValue((int)Math.round(100*Math.random()%100)); // [FIXME] getRemainingAmount
+//    		energyConsumedAmount[i].setText(
+//    				String.format("Current energy consumed amount: \t %s kwH", Math.round(100*Math.random()%100))); // [FIXME] getComsumedAmount
+    		deviceComsumingSource[i].setText("Being consumed by:"); // [FIXME] getDeviceComsuming
+    		
+    		// if amount >=100 
+    		// chargeSourceBtn[i].setText("Charge");
+    	}
+    	
     	//
         javax.swing.GroupLayout energySourceMgmtPanelLayout = new javax.swing.GroupLayout(this);
         this.setLayout(energySourceMgmtPanelLayout);
         
-        javax.swing.GroupLayout.ParallelGroup horizontalEvenGroup 	= energySourceMgmtPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false);
-        javax.swing.GroupLayout.ParallelGroup horizontalOddGroup 	= energySourceMgmtPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false);
-        for (int i=sourceNames.size()-1; i>=0; i--) {
+        // 
+        javax.swing.GroupLayout.ParallelGroup horizontalEvenGroup 	= energySourceMgmtPanelLayout.createParallelGroup(
+        		javax.swing.GroupLayout.Alignment.LEADING, false);
+        javax.swing.GroupLayout.ParallelGroup horizontalOddGroup 	= energySourceMgmtPanelLayout.createParallelGroup(
+        		javax.swing.GroupLayout.Alignment.LEADING, false);
+        for (int i=numOfSourcePanel-1; i>=0; i--) {
         	if((i%2)==1) {
-        		horizontalOddGroup.addComponent(energySourcePanel[i], javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
+        		horizontalOddGroup.addComponent(energySourcePanel[i], javax.swing.GroupLayout.PREFERRED_SIZE, 450, javax.swing.GroupLayout.PREFERRED_SIZE);
         	} else {
-        		horizontalEvenGroup.addComponent(energySourcePanel[i], javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
+        		horizontalEvenGroup.addComponent(energySourcePanel[i], javax.swing.GroupLayout.PREFERRED_SIZE, 450, javax.swing.GroupLayout.PREFERRED_SIZE);
         	}
         }
         energySourceMgmtPanelLayout.setHorizontalGroup(
@@ -163,72 +234,76 @@ public class EnergySourceManagementUI extends JPanel {
                 .addContainerGap(20, Short.MAX_VALUE))
         );
         
+        //
         javax.swing.GroupLayout.SequentialGroup verticalSeqGroup = energySourceMgmtPanelLayout.createSequentialGroup();
-        javax.swing.GroupLayout.ParallelGroup[] verticalGroup = new javax.swing.GroupLayout.ParallelGroup[sourceNames.size()/2+1]; 
-        for (int i=0; i<sourceNames.size(); i++) { 
+        javax.swing.GroupLayout.ParallelGroup[] verticalGroup = new javax.swing.GroupLayout.ParallelGroup[numOfSourcePanel/2+1]; 
+        for (int i=0; i<numOfSourcePanel; i++) { 
         	if ((i%2)==0) verticalGroup[i/2] = energySourceMgmtPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false);
-        	verticalGroup[i/2].addComponent(energySourcePanel[i], javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
+        	verticalGroup[i/2].addComponent(
+        			energySourcePanel[i], javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
         }
         verticalSeqGroup.addContainerGap(20, Short.MAX_VALUE);
-        for (int i=0; i<sourceNames.size(); i++) { 
+        for (int i=0; i<numOfSourcePanel; i++) { 
         	if ((i%2)==0) verticalSeqGroup.addGroup(verticalGroup[i/2]);
-        	else if (i!=(sourceNames.size()-1)) verticalSeqGroup.addGap(20, 20, 20);
+        	else if (i!=(numOfSourcePanel-1)) verticalSeqGroup.addGap(20, 20, 20);
         }
         verticalSeqGroup.addContainerGap(20, Short.MAX_VALUE);
         energySourceMgmtPanelLayout.setVerticalGroup(
             energySourceMgmtPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(verticalSeqGroup)
         );
-    }// </editor-fold>      
-    	
-//	public void updateEnergeySourceGUI() {
-//		for (int i=0; i<energySources.length; i++) {
-//			supplyAmountLabel[i].setText("Current Supply Amount: " + energySources[i].getB() + "kWh"); // getSupplyAmount
-//			// if battery/panel
-//			if (i>2) {
-//	    		remainingPercentageLabel[i].setText("Remaining Percentage: " + energySources[i].getA() + "%"); // getRemainedAmount
-//	    		deviceComsumingLabel[i].setText("<html>Being Consumed by <br> Device A <br> Device C</html>"); // getDevices
-//	    		if (energySources[i].getA()>=100) {
-//					chargeBtn[i].setText("Charge");
-//				}
-//			}
-//		}
-//		setSize(600, 200*energySources.length);
-//	}
+    }
+    
 	
-//	public void removeEnergySource(int index, EnergySource energySource) { //[FIXME] Last index and check value
-//		int pos = 0;
-//		EnergySource temp[] = new EnergySource[energySources.length-1];
-//		for (int i=0; i<energySources.length; i++) {
-//			if (i==index) continue;
-//			temp[pos++] = energySources[i];
-//		}
-//		energySources = Arrays.copyOf(temp, temp.length);
-//		getContentPane().remove(index);
-//		updateEnergeySourceGUI();
-//	}
-	
+    // Add new energy source to the system
 //	public void addEnergySource() { // TODO
 //		
 //	}
     
-    private void chargeBtnSourceActionPerformed(java.awt.event.ActionEvent evt, int index) {                                                 
+    
+    // Button event for charging battery/panel
+    private synchronized void chargeSourceBtnActionPerformed(java.awt.event.ActionEvent evt, int index) { // [TODO]                                              
         // TODO add your handling code here:
-    	logger.info("Charge Button pressed " + index);
+    	logger.fine("Charge Button pressed " + index);
+//		if (btn.getText() == "Charge") {
+//		// if remaining percentage < 100% 
+//		btn.setText("Charging");  
+//	 } else {
+//		btn.setText("Charge");
+//	 }
     }                                                
 
-    private void removeBtnSourceActionPerformed(java.awt.event.ActionEvent evt, int index) {                                                 
+    
+    // Button event for removing energy source
+    private synchronized void removeSourceBtnActionPerformed(java.awt.event.ActionEvent evt, int index) {                                                 
         // TODO add your handling code here:
-    	logger.info("Remove Button pressed " + index);
+    	logger.fine("Remve Button pressed " + index);
+    	logger.info(String.format("Remove %s from energy source system.", 
+    			energyManager.getEnergySourceNames().get(index)));
+    	energyManager.removeEnergySource(energyManager.getEnergySourceNames().get(index)); // [FIXME] failed to remove; can't get the sourceID
+    	this.remove(index);
+    	logger.fine(String.format("%d - %d", 
+    			this.getComponentCount(), energyManager.getEnergySourceNames().size()));
+    	updateEnergySourceUI();
+    	
     }  
+    
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		if (this.isVisible()) logger.fine("Hi");
+		while(true) {
+			updateEnergySourceUI();
+		}
+	}
 	
-    // Variables declaration                  
-    private javax.swing.JButton[] chargeBtnSource = new javax.swing.JButton[50];
-    private javax.swing.JLabel[] deviceComsumingSource = new javax.swing.JLabel[50];
-    private javax.swing.JLabel[] energySourceLabel = new javax.swing.JLabel[50];
+    // Variables declaration 
     private javax.swing.JPanel[] energySourcePanel = new javax.swing.JPanel[50];
-    private javax.swing.JLabel[] remainingLabelSource = new javax.swing.JLabel[50];
+    private javax.swing.JLabel[] energySourceLabel = new javax.swing.JLabel[50];
+    private javax.swing.JLabel[] remainingLabel = new javax.swing.JLabel[50];
     private javax.swing.JProgressBar[] remainingBarSource = new javax.swing.JProgressBar[50];
-    private javax.swing.JButton[] removeBtnSource = new javax.swing.JButton[50];
-    private javax.swing.JLabel[] supplyAmountSource = new javax.swing.JLabel[50];
+    private javax.swing.JLabel[] energyConsumedAmount = new javax.swing.JLabel[50];
+    private javax.swing.JLabel[] deviceComsumingSource = new javax.swing.JLabel[50];
+    private javax.swing.JButton[] chargeSourceBtn = new javax.swing.JButton[50];
+    private javax.swing.JButton[] removeSourceBtn = new javax.swing.JButton[50];
 }

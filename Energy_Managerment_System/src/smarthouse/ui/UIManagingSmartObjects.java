@@ -11,20 +11,24 @@ package smarthouse.ui;
 
 import java.awt.Image;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+import smarthouse.engergy.EnergyManager;
+
 public class UIManagingSmartObjects extends javax.swing.JFrame {
 
     /**
      * Creates new form UIManagingSmartObjects
      */
-    public UIManagingSmartObjects() throws IOException {
-        initComponents();
-        scaleImage();
+    public UIManagingSmartObjects(EnergyManager energyManager) throws IOException {
+        this.energyManager = energyManager;
+    	initComponents();
+//        scaleImage();
     }
     
     
@@ -75,32 +79,32 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         devicesButton = new javax.swing.JButton();
         jTabbedPane = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
-        fan = new javax.swing.JLabel();
-        fanSource = new javax.swing.JComboBox<>();
-        onFanButton = new javax.swing.JButton();
-        offFanButton = new javax.swing.JButton();
-        heater = new javax.swing.JLabel();
-        heaterSource = new javax.swing.JComboBox<>();
-        onHeaterButton = new javax.swing.JButton();
-        offHeaterButton = new javax.swing.JButton();
-        lightBulb = new javax.swing.JLabel();
-        lightSource = new javax.swing.JComboBox<>();
-        onLightButton = new javax.swing.JButton();
-        offLightButton = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        labelFanRate = new javax.swing.JLabel();
-        labelHeaterRate = new javax.swing.JLabel();
-        labelFanConsum = new javax.swing.JLabel();
-        labelLightRate = new javax.swing.JLabel();
-        labelHeaterConsum = new javax.swing.JLabel();
-        labelLightConsum = new javax.swing.JLabel();
-
+//        fan = new javax.swing.JLabel();
+//        fanSource = new javax.swing.JComboBox<>();
+//        onFanButton = new javax.swing.JButton();
+//        offFanButton = new javax.swing.JButton();
+//        heater = new javax.swing.JLabel();
+//        heaterSource = new javax.swing.JComboBox<>();
+//        onHeaterButton = new javax.swing.JButton();
+//        offHeaterButton = new javax.swing.JButton();
+//        lightBulb = new javax.swing.JLabel();
+//        lightSource = new javax.swing.JComboBox<>();
+//        onLightButton = new javax.swing.JButton();
+//        offLightButton = new javax.swing.JButton();
+//        jLabel4 = new javax.swing.JLabel();
+//        jLabel5 = new javax.swing.JLabel();
+//        labelFanRate = new javax.swing.JLabel();
+//        labelHeaterRate = new javax.swing.JLabel();
+//        labelFanConsum = new javax.swing.JLabel();
+//        labelLightRate = new javax.swing.JLabel();
+//        labelHeaterConsum = new javax.swing.JLabel();
+//        labelLightConsum = new javax.swing.JLabel();
+//
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setSize(new java.awt.Dimension(100, 100));
-
+//
         jPanel1.setBackground(new java.awt.Color(51, 255, 255));
-
+//
         energyButton.setText("Energy Source Management");
         energyButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -141,225 +145,227 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         );
 
         jTabbedPane.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-
-        fan.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-
-        EnergySource sourceList = new EnergySource();
-        fanSource.setModel(new javax.swing.DefaultComboBoxModel<>(sourceList.getList()));
-//        fanSource.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "source 1", "Item 2", "Item 3", "Item 4" }));
-        fanSource.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fanSourceActionPerformed(evt);
-            }
-        });
-
-        onFanButton.setText("ON");
-        onFanButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                onFanButtonActionPerformed(evt);
-            }
-        });
-
-        offFanButton.setText("OFF");
-        offFanButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                offFanButtonActionPerformed(evt);
-            }
-        });
-
-        heater.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-
-        heaterSource.setModel(new javax.swing.DefaultComboBoxModel<>(sourceList.getList()));
-//        heaterSource.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        onHeaterButton.setText("ON");
-        onHeaterButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                onHeaterButtonActionPerformed(evt);
-            }
-        });
-
-        offHeaterButton.setText("OFF");
-        offHeaterButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                offHeaterButtonActionPerformed(evt);
-            }
-        });
-
-        lightBulb.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-
-        lightSource.setModel(new javax.swing.DefaultComboBoxModel<>(sourceList.getList()));
-//        lightSource.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        onLightButton.setText("ON");
-        onLightButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                onLightButtonActionPerformed(evt);
-            }
-        });
-
-        offLightButton.setText("OFF");
-        offLightButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                offLightButtonActionPerformed(evt);
-            }
-        });
-
-        jLabel4.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel4.setText("Usage Rate");
-        jLabel4.setOpaque(true);
-
-        jLabel5.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel5.setText("Consumption");
-        jLabel5.setOpaque(true);
-
-        labelFanRate.setBackground(new java.awt.Color(255, 255, 255));
-        labelFanRate.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelFanRate.setText("Fan Rate:");
-        labelFanRate.setOpaque(true);
-
-        labelHeaterRate.setBackground(new java.awt.Color(255, 255, 255));
-        labelHeaterRate.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelHeaterRate.setText("Heater Rate:");
-        labelHeaterRate.setOpaque(true);
-
-        labelFanConsum.setBackground(new java.awt.Color(255, 255, 255));
-        labelFanConsum.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelFanConsum.setText("Fan: ");
-        labelFanConsum.setOpaque(true);
-
-        labelLightRate.setBackground(new java.awt.Color(255, 255, 255));
-        labelLightRate.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelLightRate.setText("Light Bulb Rate:");
-        labelLightRate.setOpaque(true);
-
-        labelHeaterConsum.setBackground(new java.awt.Color(255, 255, 255));
-        labelHeaterConsum.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelHeaterConsum.setText("Heater:");
-        labelHeaterConsum.setOpaque(true);
-
-        labelLightConsum.setBackground(new java.awt.Color(255, 255, 255));
-        labelLightConsum.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelLightConsum.setText("Light Bulb:");
-        labelLightConsum.setOpaque(true);
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addComponent(onLightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(12, 12, 12)
-                            .addComponent(offLightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addGap(26, 26, 26)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(lightBulb, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(lightSource, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addGap(59, 59, 59)
-                            .addComponent(fan, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addGap(59, 59, 59)
-                            .addComponent(fanSource, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addGap(33, 33, 33)
-                            .addComponent(onFanButton, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(12, 12, 12)
-                            .addComponent(offFanButton, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 171, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(onHeaterButton, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(12, 12, 12)
-                                .addComponent(offHeaterButton, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(26, 26, 26)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(heater, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(heaterSource, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(182, 182, 182))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(labelFanRate, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(labelHeaterRate, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(73, 73, 73))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(labelLightRate, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(23, 23, 23)))
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(labelLightConsum, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labelFanConsum, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labelHeaterConsum, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(85, 85, 85))))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(heater, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(6, 6, 6)
-                        .addComponent(heaterSource, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(6, 6, 6)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(onHeaterButton)
-                            .addComponent(offHeaterButton)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(fan, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(6, 6, 6)
-                        .addComponent(fanSource, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(6, 6, 6)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(onFanButton)
-                            .addComponent(offFanButton))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 125, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lightBulb, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(labelFanRate)
-                            .addComponent(labelFanConsum))))
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(lightSource, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(6, 6, 6)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(onLightButton)
-                            .addComponent(offLightButton)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(labelHeaterRate)
-                            .addComponent(labelHeaterConsum))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(labelLightRate)
-                            .addComponent(labelLightConsum))))
-                .addGap(64, 64, 64))
-        );
+//
+//        fan.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+//
+//        EnergySource sourceList = new EnergySource();
+//        fanSource.setModel(new javax.swing.DefaultComboBoxModel<>(sourceList.getList()));
+////        fanSource.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "source 1", "Item 2", "Item 3", "Item 4" }));
+//        fanSource.addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                fanSourceActionPerformed(evt);
+//            }
+//        });
+//
+//        onFanButton.setText("ON");
+//        onFanButton.addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                onFanButtonActionPerformed(evt);
+//            }
+//        });
+//
+//        offFanButton.setText("OFF");
+//        offFanButton.addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                offFanButtonActionPerformed(evt);
+//            }
+//        });
+//
+//        heater.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+//
+//        heaterSource.setModel(new javax.swing.DefaultComboBoxModel<>(sourceList.getList()));
+////        heaterSource.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+//
+//        onHeaterButton.setText("ON");
+//        onHeaterButton.addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                onHeaterButtonActionPerformed(evt);
+//            }
+//        });
+//
+//        offHeaterButton.setText("OFF");
+//        offHeaterButton.addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                offHeaterButtonActionPerformed(evt);
+//            }
+//        });
+//
+//        lightBulb.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+//
+//        lightSource.setModel(new javax.swing.DefaultComboBoxModel<>(sourceList.getList()));
+////        lightSource.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+//
+//        onLightButton.setText("ON");
+//        onLightButton.addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                onLightButtonActionPerformed(evt);
+//            }
+//        });
+//
+//        offLightButton.setText("OFF");
+//        offLightButton.addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                offLightButtonActionPerformed(evt);
+//            }
+//        });
+//
+//        jLabel4.setBackground(new java.awt.Color(255, 255, 255));
+//        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+//        jLabel4.setText("Usage Rate");
+//        jLabel4.setOpaque(true);
+//
+//        jLabel5.setBackground(new java.awt.Color(255, 255, 255));
+//        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+//        jLabel5.setText("Consumption");
+//        jLabel5.setOpaque(true);
+//
+//        labelFanRate.setBackground(new java.awt.Color(255, 255, 255));
+//        labelFanRate.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+//        labelFanRate.setText("Fan Rate:");
+//        labelFanRate.setOpaque(true);
+//
+//        labelHeaterRate.setBackground(new java.awt.Color(255, 255, 255));
+//        labelHeaterRate.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+//        labelHeaterRate.setText("Heater Rate:");
+//        labelHeaterRate.setOpaque(true);
+//
+//        labelFanConsum.setBackground(new java.awt.Color(255, 255, 255));
+//        labelFanConsum.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+//        labelFanConsum.setText("Fan: ");
+//        labelFanConsum.setOpaque(true);
+//
+//        labelLightRate.setBackground(new java.awt.Color(255, 255, 255));
+//        labelLightRate.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+//        labelLightRate.setText("Light Bulb Rate:");
+//        labelLightRate.setOpaque(true);
+//
+//        labelHeaterConsum.setBackground(new java.awt.Color(255, 255, 255));
+//        labelHeaterConsum.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+//        labelHeaterConsum.setText("Heater:");
+//        labelHeaterConsum.setOpaque(true);
+//
+//        labelLightConsum.setBackground(new java.awt.Color(255, 255, 255));
+//        labelLightConsum.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+//        labelLightConsum.setText("Light Bulb:");
+//        labelLightConsum.setOpaque(true);
+//
+//        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+//        jPanel2.setLayout(jPanel2Layout);
+//        jPanel2Layout.setHorizontalGroup(
+//            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+//                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+//                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                        .addGroup(jPanel2Layout.createSequentialGroup()
+//                            .addComponent(onLightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                            .addGap(12, 12, 12)
+//                            .addComponent(offLightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
+//                        .addGroup(jPanel2Layout.createSequentialGroup()
+//                            .addGap(26, 26, 26)
+//                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                                .addComponent(lightBulb, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                                .addComponent(lightSource, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))))
+//                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                        .addGroup(jPanel2Layout.createSequentialGroup()
+//                            .addGap(59, 59, 59)
+//                            .addComponent(fan, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+//                        .addGroup(jPanel2Layout.createSequentialGroup()
+//                            .addGap(59, 59, 59)
+//                            .addComponent(fanSource, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+//                        .addGroup(jPanel2Layout.createSequentialGroup()
+//                            .addGap(33, 33, 33)
+//                            .addComponent(onFanButton, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                            .addGap(12, 12, 12)
+//                            .addComponent(offFanButton, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))))
+//                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 171, Short.MAX_VALUE)
+//                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+//                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                            .addGroup(jPanel2Layout.createSequentialGroup()
+//                                .addComponent(onHeaterButton, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                                .addGap(12, 12, 12)
+//                                .addComponent(offHeaterButton, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
+//                            .addGroup(jPanel2Layout.createSequentialGroup()
+//                                .addGap(26, 26, 26)
+//                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                                    .addComponent(heater, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                                    .addComponent(heaterSource, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))))
+//                        .addGap(182, 182, 182))
+//                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+//                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+//                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+//                                    .addComponent(labelFanRate, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                                    .addComponent(labelHeaterRate, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
+//                                .addGap(73, 73, 73))
+//                            .addGroup(jPanel2Layout.createSequentialGroup()
+//                                .addComponent(labelLightRate, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                                .addGap(23, 23, 23)))
+//                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                            .addComponent(labelLightConsum, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                            .addComponent(labelFanConsum, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                            .addComponent(labelHeaterConsum, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
+//                        .addGap(85, 85, 85))))
+//        );
+//        jPanel2Layout.setVerticalGroup(
+//            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//            .addGroup(jPanel2Layout.createSequentialGroup()
+//                .addGap(28, 28, 28)
+//                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+//                        .addComponent(heater, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                        .addGap(6, 6, 6)
+//                        .addComponent(heaterSource, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                        .addGap(6, 6, 6)
+//                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                            .addComponent(onHeaterButton)
+//                            .addComponent(offHeaterButton)))
+//                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+//                        .addComponent(fan, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                        .addGap(6, 6, 6)
+//                        .addComponent(fanSource, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                        .addGap(6, 6, 6)
+//                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                            .addComponent(onFanButton)
+//                            .addComponent(offFanButton))))
+//                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 125, Short.MAX_VALUE)
+//                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                    .addComponent(lightBulb, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                    .addGroup(jPanel2Layout.createSequentialGroup()
+//                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+//                            .addComponent(jLabel4)
+//                            .addComponent(jLabel5))
+//                        .addGap(18, 18, 18)
+//                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+//                            .addComponent(labelFanRate)
+//                            .addComponent(labelFanConsum))))
+//                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                    .addGroup(jPanel2Layout.createSequentialGroup()
+//                        .addGap(6, 6, 6)
+//                        .addComponent(lightSource, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+//                        .addGap(6, 6, 6)
+//                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                            .addComponent(onLightButton)
+//                            .addComponent(offLightButton)))
+//                    .addGroup(jPanel2Layout.createSequentialGroup()
+//                        .addGap(3, 3, 3)
+//                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                            .addComponent(labelHeaterRate)
+//                            .addComponent(labelHeaterConsum))
+//                        .addGap(18, 18, 18)
+//                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+//                            .addComponent(labelLightRate)
+//                            .addComponent(labelLightConsum))))
+//                .addGap(64, 64, 64))
+//        );
 
         jTabbedPane.addTab("Devices Management", jPanel2);
 
-		this.energySourceMgmtPanel = new EnergySourceManagementUI(sourceList); // [FIXME] should be energySource from constructor
+		this.energySourceMgmtPanel = new EnergySourceManagementUI(this.energyManager); // [FIXME] should be energySource from constructor
+//        Thread energyUIThre2ad = new Thread (this.energySourceMgmtPanel);
+//        energyUIThread.start();
 
         jTabbedPane.addTab("Energy Source Management", this.energySourceMgmtPanel);
 
@@ -433,43 +439,44 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UIManagingSmartObjects.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UIManagingSmartObjects.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UIManagingSmartObjects.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UIManagingSmartObjects.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    new UIManagingSmartObjects().setVisible(true);
-                } catch (IOException ex) {
-                    Logger.getLogger(UIManagingSmartObjects.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-    }
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(UIManagingSmartObjects.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(UIManagingSmartObjects.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(UIManagingSmartObjects.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(UIManagingSmartObjects.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                try {
+//                    new UIManagingSmartObjects().setVisible(true);
+//                } catch (IOException ex) {
+//                    Logger.getLogger(UIManagingSmartObjects.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//            }
+//        });
+//    }
 
     private EnergySourceManagementUI energySourceMgmtPanel; 
+    private EnergyManager energyManager;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton devicesButton;
     private javax.swing.JButton energyButton;
