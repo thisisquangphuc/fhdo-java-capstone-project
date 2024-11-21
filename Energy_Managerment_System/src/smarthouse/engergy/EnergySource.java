@@ -27,21 +27,21 @@ public class EnergySource {
     }
 
     // Constructor - use for power source having battery
-    public EnergySource(String sourceName, String sourceType, Battery battery) {
+    public EnergySource(String sourceName, EnergyType sourceType, Battery battery) {
         if (battery.getCapacity() <= 0) {
             throw new IllegalArgumentException("Capacity must be greater than zero.");
         }
         this.sourceID = UUID.randomUUID().toString();
         this.sourceName = sourceName;
-        this.sourceType = sourceType;
+        this.sourceType = sourceType.name();
         this.battery = battery;
         // this.availableEnergy = battery.getEnergyLevel();
     }
 
     // Constructor - use for GRID power
-    public EnergySource(String sourceName, String sourceType) {
+    public EnergySource(String sourceName, EnergyType sourceType) {
         this.sourceName = sourceName;
-        this.sourceType = sourceType;
+        this.sourceType = sourceType.name();
         this.sourceID = UUID.randomUUID().toString();
     }
 
@@ -83,10 +83,11 @@ public class EnergySource {
              *   return false; // Insufficient energy for BATTERY or SOLAR
              *}
              */ 
-            if (!battery.discharge(amount)) {
-                logger.warning(String.format("Battery of [%s] is empty!", sourceName));
-            }
-            return battery.discharge(amount);
+        	boolean result = battery.discharge(amount);
+        	if (!result) {
+        	    logger.warning(String.format("Battery of [%s] is empty!", sourceName));
+        	}
+        	return result;
         }
 
         // For GRID, just record the energy consumption

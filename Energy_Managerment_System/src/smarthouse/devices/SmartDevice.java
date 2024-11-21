@@ -24,16 +24,21 @@ public class SmartDevice implements Runnable {
     private String sourceName;
     private double simulationRate = 1.0;    // Default simulation rate
 
-    public SmartDevice(String name, String engergyType, Battery battery) {
+    // Enum of energy types 
+    public enum EnergyType {
+        AC, DC
+    }
+
+    public SmartDevice(String name, EnergyType engergyType, Battery battery) {
         this.deviceName = name;
-        this.engergyType = engergyType;
+        this.engergyType = engergyType.name();
         this.battery = battery;
         this.deviceId = UUID.randomUUID().toString();   //Assign a unique ID
     }
 
-    public SmartDevice(String name, String engergyType) {
+    public SmartDevice(String name, EnergyType engergyType) {
         this.deviceName = name;
-        this.engergyType = engergyType;
+        this.engergyType = engergyType.name();
         this.deviceId = UUID.randomUUID().toString();   //Assign a unique ID
     }
     
@@ -85,7 +90,7 @@ public class SmartDevice implements Runnable {
         // get ID of the energy source
         this.energySourceID = energySource.getSourceID();
         // get sourceName from id 
-        this.sourceName = EnergyManager.getInstance().getEnergySource(energySourceID).getSourceName();
+        this.sourceName = EnergyManager.getInstance().getEnergySourceByID(energySourceID).getSourceName();
     }
 
     public String getEnergySourceID() {
@@ -95,7 +100,7 @@ public class SmartDevice implements Runnable {
     public synchronized void setEnergySourceID(String energySourceID) {
         this.energySourceID = energySourceID;
         // get sourceName from id 
-        this.sourceName = EnergyManager.getInstance().getEnergySource(energySourceID).getSourceName();
+        this.sourceName = EnergyManager.getInstance().getEnergySourceByID(energySourceID).getSourceName();
     }
 
     // Set the useIntegratedBattery
@@ -127,11 +132,17 @@ public class SmartDevice implements Runnable {
                 //int randomConsumption = new Random().nextInt(5) + 1;        // Consume between 1 and 5 units of energy per cycle
                 double randomConsumption = new Random().nextDouble(5) + 1;        // Consume between 1 and 5 units of energy per cycle
                 if (useIntegratedBattery) {
-                    if (!battery.discharge(randomConsumption)) {
-                        logger.warning(String.format("Battery of [%s] is empty!", deviceName));
+                    //check if battery is null
+                    if (battery == null) {
+                        logger.warning(String.format("Device [%s] has no battery!", deviceName));
                         turnOff();
                     } else {
-                        logger.info(String.format("Device [%s] consumed %.2f kWh from integrated battery", deviceName, randomConsumption));
+                        if (!battery.discharge(randomConsumption)) {
+                            logger.warning(String.format("Battery of [%s] is empty!", deviceName));
+                            turnOff();
+                        } else {
+                            logger.info(String.format("Device [%s] consumed %.2f kWh from integrated battery", deviceName, randomConsumption));
+                        }
                     }
                 } else {
                     boolean success = EnergyManager.getInstance().distributeEnergy(this, randomConsumption);

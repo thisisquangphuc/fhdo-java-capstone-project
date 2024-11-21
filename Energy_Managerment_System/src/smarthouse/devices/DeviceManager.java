@@ -36,7 +36,8 @@ public class DeviceManager {
 
     public void turnOnDevice(SmartDevice device,boolean useIntegratedBattery) {
         if (!device.isOn()) {
-            if (useIntegratedBattery) {
+            // check if energyType of device is AC or DC
+            if (useIntegratedBattery && device.getDeviceType().equals("DC")) {
                 device.setUseIntegratedBattery(true);
             } else {
                 device.setUseIntegratedBattery(false);
