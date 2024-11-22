@@ -5,6 +5,7 @@ package smarthouse;
 
 import java.util.List;
 import java.util.logging.Logger;
+
 import smarthouse.devices.DeviceManager;
 import smarthouse.devices.SmartDevice;
 import smarthouse.engergy.Battery;
@@ -71,7 +72,7 @@ public class Main {
 			DeviceManager deviceManager = new DeviceManager();
 	
 			// Create SmartDevices
-			SmartDevice fan = new SmartDevice("Living Room Fan", SmartDevice.EnergyType.AC);
+			SmartDevice fan = new SmartDevice("Living Room Fan", SmartDevice.EnergyType.DC);
 			SmartDevice cooler = new SmartDevice("Bedroom Cooler", SmartDevice.EnergyType.DC);
 			SmartDevice heater = new SmartDevice("Living Room Heater", SmartDevice.EnergyType.AC);
 
@@ -124,12 +125,13 @@ public class Main {
 				logger.info(device.getStatus());
 			}
 
-			new UIManagingSmartObjects(energyManager).setVisible(true);
+			// Create UI
+			new UIManagingSmartObjects(energyManager, deviceManager).setVisible(true);
 			
 			/* Turn on devices though the DeviceManager */
-			// deviceManager.turnOnDevice(heater);
+			deviceManager.turnOnDevice(ring,false);
 			deviceManager.turnOnDevice(fan, false);
-			// deviceManager.turnOnDevice(cooler, false);
+			deviceManager.turnOnDevice(cooler,false);
 
 			
 			/* Get battery percentage of devices */
