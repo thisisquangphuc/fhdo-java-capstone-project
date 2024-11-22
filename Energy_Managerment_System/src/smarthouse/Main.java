@@ -70,7 +70,7 @@ public class Main {
 			DeviceManager deviceManager = new DeviceManager();
 	
 			// Create SmartDevices
-			SmartDevice fan = new SmartDevice("Living Room Fan", SmartDevice.EnergyType.DC);
+			SmartDevice fan = new SmartDevice("Living Room Fan", SmartDevice.EnergyType.AC);
 			SmartDevice cooler = new SmartDevice("Bedroom Cooler", SmartDevice.EnergyType.DC);
 			SmartDevice heater = new SmartDevice("Living Room Heater", SmartDevice.EnergyType.AC);
 
@@ -79,14 +79,18 @@ public class Main {
 			SmartDevice ring = new SmartDevice("Door Ring", SmartDevice.EnergyType.DC, ringBatt);
 	
 			// Assign energy sources to devices
-			fan.setEnergySource(solar);
-			cooler.setEnergySource(solar);
-			heater.setEnergySource(grid);
-			ring.setEnergySource(powerBank);
+			try {
+				fan.setEnergySource(solar);
+				cooler.setEnergySource(solar);
+				heater.setEnergySource(grid);
+				ring.setEnergySource(powerBank);
+			} catch (Exception e) {
+				logger.severe(e.getMessage());
+			}
 
 			// Set simulation rate to devices (default is 1.0), see detail in README.md
 			fan.setSimulationRate(0.5);
-			cooler.setSimulationRate(2.0);
+			cooler.setSimulationRate(1.0);
 			// heater.setSimulationRate(1.0);
 			// ring.setSimulationRate(1.0);
 	
@@ -122,8 +126,9 @@ public class Main {
 			
 			/* Turn on devices though the DeviceManager */
 			// deviceManager.turnOnDevice(heater);
-			// deviceManager.turnOnDevice(fan);
-			deviceManager.turnOnDevice(cooler, false);
+			deviceManager.turnOnDevice(fan, false);
+			// deviceManager.turnOnDevice(cooler, false);
+
 			
 			/* Get battery percentage of devices */
 			// String perRing = ring.getBattery().getBatteryPercentage();
@@ -135,10 +140,10 @@ public class Main {
 			}
 			
 			/* Recharge Energy source */
-			energyManager.manageRecharging(solar.getSourceID(), true);
+			// energyManager.manageRecharging(solar.getSourceID(), true);
 
 			/* Device use its own battery */
-			deviceManager.turnOnDevice(ring,true);
+			// deviceManager.turnOnDevice(ring,true);
 
 			try {
 				/* Simulation time */
