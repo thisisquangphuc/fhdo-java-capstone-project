@@ -159,7 +159,7 @@ public class Main {
 				// deviceManager.turnOffDevice(fan);
 				
 				/* Turn off source charging */
-				energyManager.manageRecharging(solar.getSourceID(), false);
+//				energyManager.manageRecharging(solar.getSourceID(), false);
 
 				/* Print consumed energy from devices */
 				// double consumedEnergy = heater.getConsumedEnergy();
