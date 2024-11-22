@@ -70,8 +70,15 @@ public class SmartDevice implements Runnable {
         this.battery = battery;
     }
     
-    public void setSimulationRate(double rate) {
+    public synchronized void setSimulationRate(double rate) {
+        if (rate < 0 || rate > 1) {
+            throw new IllegalArgumentException("Simulation rate must be between 0 and 1.");
+        }
         this.simulationRate = rate;
+    }
+
+    public double getSimulationRate() {
+        return simulationRate;
     }
 
     // get consumedEnergy 
