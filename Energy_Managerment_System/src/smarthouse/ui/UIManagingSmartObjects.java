@@ -17,13 +17,19 @@ import smarthouse.engergy.EnergySource;
 import smarthouse.log.CustomLogger;
 
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import java.time.Duration;
+import java.time.Instant;
 
 public class UIManagingSmartObjects extends javax.swing.JFrame {
 	public static final Logger logger = CustomLogger.getLogger();
@@ -39,6 +45,18 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 	private SmartDevice fanDev = new SmartDevice("Living Room Fan", SmartDevice.EnergyType.DC);
 	private SmartDevice coolerDev = new SmartDevice("Bedroom Cooler", SmartDevice.EnergyType.DC);
 	private SmartDevice heaterDev = new SmartDevice("Living Room Heater", SmartDevice.EnergyType.AC);
+	
+	// timer
+	private Instant startFan;
+	private Instant stopFan;
+	private Instant startHeater;
+	private Instant stopHeater;
+	private Instant startCooler;
+	private Instant stopCooler;
+	private long timeTakenForFan = 0;
+	private long timeTakenForHeater = 0;
+	private long timeTakenForCooler = 0;
+//	private Duration timeElapsedForFan;
 	
     /**
      * Creates new form UIManagingSmartObjects
@@ -60,8 +78,8 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     public void scaleImage() throws IOException{
         //String currentPath = new java.io.File(".").getCanonicalPath();
         ImageIcon iconFan = new ImageIcon(getClass().getResource("/smarthouse/ui/icons/fanon.png"));
-        ImageIcon iconLightBulb = new ImageIcon(getClass().getResource("/smarthouse/ui/icons/light.png"));
-        ImageIcon iconHeater = new ImageIcon(getClass().getResource("/smarthouse/ui/icons/heateron.png"));
+        ImageIcon iconLightBulb = new ImageIcon(getClass().getResource("/smarthouse/ui/icons/cooler.png"));
+        ImageIcon iconHeater = new ImageIcon(getClass().getResource("/smarthouse/ui/icons/heater.png"));
         ImageIcon iconEnergy = new ImageIcon(getClass().getResource("/smarthouse/ui/icons/energy.png"));
         ImageIcon iconBackground = new ImageIcon(getClass().getResource("/smarthouse/ui/icons/smarthome2.jpg"));
         // scaling image fan
@@ -122,6 +140,22 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     	
     }
     
+    public static void setWarningMsg(String text){
+        Toolkit.getDefaultToolkit().beep();
+        JOptionPane optionPane = new JOptionPane(text,JOptionPane.WARNING_MESSAGE);
+        JDialog dialog = optionPane.createDialog("Warning!");
+        dialog.setAlwaysOnTop(true);
+        dialog.setVisible(true);
+    }
+    
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -211,11 +245,7 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 
         
         fanSource.setModel(new javax.swing.DefaultComboBoxModel<>(sourceList));
-        fanSource.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fanSourceActionPerformed(evt);
-            }
-        });
+        
 
         onFanButton.setText("ON");
         onFanButton.addActionListener(new java.awt.event.ActionListener() {
@@ -269,7 +299,7 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 
         jLabel4.setBackground(new java.awt.Color(255, 255, 255));
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel4.setText("Usage Rate");
+        jLabel4.setText("Time Taken");
         jLabel4.setOpaque(true);
 
         jLabel5.setBackground(new java.awt.Color(255, 255, 255));
@@ -279,12 +309,12 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 
         labelFanRate.setBackground(new java.awt.Color(255, 255, 255));
         labelFanRate.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelFanRate.setText("Fan Rate:");
+        labelFanRate.setText("Fan:");
         labelFanRate.setOpaque(true);
 
         labelHeaterRate.setBackground(new java.awt.Color(255, 255, 255));
         labelHeaterRate.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelHeaterRate.setText("Heater Rate:");
+        labelHeaterRate.setText("Heater:");
         labelHeaterRate.setOpaque(true);
 
         labelFanConsum.setBackground(new java.awt.Color(255, 255, 255));
@@ -294,7 +324,7 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 
         labelLightRate.setBackground(new java.awt.Color(255, 255, 255));
         labelLightRate.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelLightRate.setText("Light Bulb Rate:");
+        labelLightRate.setText("Cooler:");
         labelLightRate.setOpaque(true);
 
         labelHeaterConsum.setBackground(new java.awt.Color(255, 255, 255));
@@ -304,7 +334,7 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 
         labelLightConsum.setBackground(new java.awt.Color(255, 255, 255));
         labelLightConsum.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelLightConsum.setText("Light Bulb:");
+        labelLightConsum.setText("Cooler:");
         labelLightConsum.setOpaque(true);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -353,12 +383,12 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(labelFanRate, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(labelHeaterRate, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(labelFanRate, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(labelHeaterRate, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(73, 73, 73))
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(labelLightRate, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(labelLightRate, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(23, 23, 23)))
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(labelLightConsum, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -465,50 +495,56 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 //    	jTabbedPane.setSelectedIndex(0);
     }//GEN-LAST:event_devicesButtonActionPerformed
 
-    private void fanSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fanSourceActionPerformed
-        // TODO add your handling code here:
-//        String[] sourceName = {"Source 1", "Source 2", "Source 3", "Source 4"};
-//        fanSource.setModel(new javax.swing.DefaultComboBoxModel<>(sourceName));
-    }//GEN-LAST:event_fanSourceActionPerformed
-
     private void onFanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onFanButtonActionPerformed
         // TODO add your handling code here:
         int a = fanSource.getSelectedIndex();
-        labelFanConsum.setText("Fan: " + a);
-        labelFanRate.setText("Fan Rate: " + a);
         logger.info(String.format("Option value: %d", a));
         String sourceName = sourceList[a]; 
         String sourceID = energyManager.getEnergySourceIDByName(sourceName);
-        logger.info(String.format("Fan ID: " + fanDev.getDeviceId()));
-        deviceManager.getDeviceByID(fanDev.getDeviceId()).setEnergySourceID(sourceID);
-//        deviceManager.getDeviceByID(sourceID).getDeviceId();
-//        setEnergySourceID(sourceID);
+        logger.info(String.format("Fan ID: " + fanDev.getDeviceId()));       
+        try {
+        	deviceManager.getDeviceByID(fanDev.getDeviceId()).setEnergySourceID(sourceID);
+        	deviceManager.turnOnDevice(fanDev, false);
+            startFan = Instant.now();
+        } catch(IllegalArgumentException e) {
+        	setWarningMsg(e.getMessage());
+        }
         
-        deviceManager.turnOnDevice(fanDev, false);
     }//GEN-LAST:event_onFanButtonActionPerformed
 
     private void offFanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_offFanButtonActionPerformed
         // TODO add your handling code here:
     	deviceManager.turnOffDevice(fanDev);
+    	Instant endFan = Instant.now();
+    	Duration timeElapsed = Duration.between(startFan, endFan);
+    	timeTakenForFan += (timeElapsed.toMillis())/1000;
+    	labelFanRate.setText("Fan: " + timeTakenForFan + " s");
+    	labelFanConsum.setText("Fan: " + round(fanDev.getConsumedEnergy(),2) + " kWh");
     }//GEN-LAST:event_offFanButtonActionPerformed
 
     private void onHeaterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onHeaterButtonActionPerformed
         // TODO add your handling code here:
     	int a = heaterSource.getSelectedIndex();
-//        labelFanConsum.setText("Fan: " + a);
-//        labelFanRate.setText("Fan Rate: " + a);
         logger.info(String.format("Option value: %d", a));
         String sourceName = sourceList[a]; 
         String sourceID = energyManager.getEnergySourceIDByName(sourceName);
-        deviceManager.getDeviceByID(heaterDev.getDeviceId()).setEnergySourceID(sourceID);
-        
-        deviceManager.turnOnDevice(heaterDev, false);
-        
+        try {
+            deviceManager.getDeviceByID(heaterDev.getDeviceId()).setEnergySourceID(sourceID);        
+            deviceManager.turnOnDevice(heaterDev, false);
+            startHeater = Instant.now();
+        } catch(IllegalArgumentException e) {	
+        	setWarningMsg(e.getMessage());
+        }     
     }//GEN-LAST:event_onHeaterButtonActionPerformed
 
     private void offHeaterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_offHeaterButtonActionPerformed
         // TODO add your handling code here:
     	deviceManager.turnOffDevice(heaterDev);
+    	Instant endHeater = Instant.now();
+    	Duration timeElapsed = Duration.between(startHeater, endHeater);
+    	timeTakenForHeater += (timeElapsed.toMillis())/1000;
+    	labelHeaterRate.setText("Heater: " + timeTakenForHeater + " s");
+    	labelHeaterConsum.setText("Heater: " + round(heaterDev.getConsumedEnergy(),2) + " kWh");
     }//GEN-LAST:event_offHeaterButtonActionPerformed
 
     private void onLightButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onLightButtonActionPerformed
@@ -517,14 +553,24 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         logger.info(String.format("Option value: %d", a));
         String sourceName = sourceList[a]; 
         String sourceID = energyManager.getEnergySourceIDByName(sourceName);
-        deviceManager.getDeviceByID(coolerDev.getDeviceId()).setEnergySourceID(sourceID);
+        try {
+            deviceManager.getDeviceByID(coolerDev.getDeviceId()).setEnergySourceID(sourceID);
+        	deviceManager.turnOnDevice(coolerDev, false);
+            startCooler = Instant.now();
+        } catch(IllegalArgumentException e) {	
+        	setWarningMsg(e.getMessage());
+        }                
         
-        deviceManager.turnOnDevice(coolerDev, false);
     }//GEN-LAST:event_onLightButtonActionPerformed
 
     private void offLightButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_offLightButtonActionPerformed
         // TODO add your handling code here:
     	deviceManager.turnOffDevice(coolerDev);
+    	Instant endCooler = Instant.now();
+    	Duration timeElapsed = Duration.between(startCooler, endCooler);
+    	timeTakenForCooler += (timeElapsed.toMillis())/1000;
+    	labelLightRate.setText("Cooler: " + timeTakenForCooler + " s");
+    	labelLightConsum.setText("Cooler: " + round(coolerDev.getConsumedEnergy(),2) + " kWh");
     }//GEN-LAST:event_offLightButtonActionPerformed
 
     /**
