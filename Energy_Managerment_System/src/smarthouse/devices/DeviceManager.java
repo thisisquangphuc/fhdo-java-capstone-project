@@ -63,6 +63,19 @@ public class DeviceManager {
         return devices.get(deviceID);
     }
 
+    // Get device by name
+    public synchronized SmartDevice getDeviceByName(String deviceName) {
+        if (deviceName == null) {
+            throw new IllegalArgumentException("Device name cannot be null.");
+        }
+        for (SmartDevice device : devices.values()) {
+            if (device.getDeviceName().equals(deviceName)) {
+                return device;
+            }
+        }
+        return null;
+    }
+
     // Get status of all devices
     public synchronized String getAllDeviceStatus() {
         StringBuilder status = new StringBuilder("Device Manager Status:\n");
@@ -89,4 +102,6 @@ public class DeviceManager {
         }
         return devicesList;
     }
+
+    
 }
