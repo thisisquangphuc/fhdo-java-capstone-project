@@ -11,6 +11,7 @@ import smarthouse.engergy.Battery;
 import smarthouse.engergy.EnergyManager;
 import smarthouse.engergy.EnergySource;
 import smarthouse.log.CustomLogger;
+import smarthouse.ui.UIManagingSmartObjects;
 import smarthouse.util.AsciiArtPrinter;
 
 /**
@@ -119,49 +120,49 @@ public class Main {
 				logger.info(device.getStatus());
 			}
 
-			
+			new UIManagingSmartObjects(energyManager, deviceManager).setVisible(true);
 			/* Turn on devices though the DeviceManager */
 			// deviceManager.turnOnDevice(heater);
 			// deviceManager.turnOnDevice(fan);
-			deviceManager.turnOnDevice(cooler, false);
+//			deviceManager.turnOnDevice(cooler, false);
 			
 			/* Get battery percentage of devices */
 			// String perRing = ring.getBattery().getBatteryPercentage();
 			// logger.info(String.format("Device %s battery percentage: %s", ring.getDeviceName(), perRing));
-			if (fan.getBattery() != null)
-			{
-				String fanPer = fan.getBattery().getBatteryPercentage();
-				logger.info(String.format("Device %s battery percentage: %s", fan.getDeviceName(), fanPer));
-			}
-			
-			/* Recharge Energy source */
-			energyManager.manageRecharging(solar.getSourceID(), true);
-
-			/* Device use its own battery */
-			deviceManager.turnOnDevice(ring,true);
-
-			try {
-				/* Simulation time */
-				Thread.sleep(10000);
-				
-				/* Turn off devices */
-				deviceManager.turnOffDevice(cooler);
-				// deviceManager.turnOffDevice(heater);
-				// deviceManager.turnOffDevice(fan);
-				
-				/* Turn off source charging */
-				energyManager.manageRecharging(solar.getSourceID(), false);
-
-				/* Print consumed energy from devices */
-				// double consumedEnergy = heater.getConsumedEnergy();
-				// logger.info(String.format("Device %s consumed total %.2f kWh.", heater.getDeviceName(), consumedEnergy));
-			
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt(); // Restore interrupted status
-				energyManager.manageRecharging(solar.getSourceID(), false);
-				deviceManager.turnOffDevice(cooler);
-				// Handle the exception, e.g., log the error or perform some other action
-			}
+//			if (fan.getBattery() != null)
+//			{
+//				String fanPer = fan.getBattery().getBatteryPercentage();
+//				logger.info(String.format("Device %s battery percentage: %s", fan.getDeviceName(), fanPer));
+//			}
+//			
+//			/* Recharge Energy source */
+//			energyManager.manageRecharging(solar.getSourceID(), true);
+//
+//			/* Device use its own battery */
+//			deviceManager.turnOnDevice(ring,true);
+//
+//			try {
+//				/* Simulation time */
+//				Thread.sleep(10000);
+//				
+//				/* Turn off devices */
+//				deviceManager.turnOffDevice(cooler);
+//				// deviceManager.turnOffDevice(heater);
+//				// deviceManager.turnOffDevice(fan);
+//				
+//				/* Turn off source charging */
+//				energyManager.manageRecharging(solar.getSourceID(), false);
+//
+//				/* Print consumed energy from devices */
+//				// double consumedEnergy = heater.getConsumedEnergy();
+//				// logger.info(String.format("Device %s consumed total %.2f kWh.", heater.getDeviceName(), consumedEnergy));
+//			
+//			} catch (InterruptedException e) {
+//				Thread.currentThread().interrupt(); // Restore interrupted status
+//				energyManager.manageRecharging(solar.getSourceID(), false);
+//				deviceManager.turnOffDevice(cooler);
+//				// Handle the exception, e.g., log the error or perform some other action
+//			}
 		} catch (Exception e) {
 			logger.severe(e.getMessage());	
 		}
