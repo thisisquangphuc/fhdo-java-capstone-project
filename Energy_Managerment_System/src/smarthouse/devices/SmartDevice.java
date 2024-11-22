@@ -14,7 +14,7 @@ public class SmartDevice implements Runnable {
     
     private String deviceName;
     private final String deviceId;
-    private final String engergyType;       // AC, DC, or other
+    private final String energyType;       // AC, DC, or other
     private Battery battery;                // Optional if device is battery powered
     private boolean isOn;
     private boolean useIntegratedBattery = false;
@@ -29,16 +29,16 @@ public class SmartDevice implements Runnable {
         AC, DC
     }
 
-    public SmartDevice(String name, EnergyType engergyType, Battery battery) {
+    public SmartDevice(String name, EnergyType energyType, Battery battery) {
         this.deviceName = name;
-        this.engergyType = engergyType.name();
+        this.energyType = energyType.name();
         this.battery = battery;
         this.deviceId = UUID.randomUUID().toString();   //Assign a unique ID
     }
 
-    public SmartDevice(String name, EnergyType engergyType) {
+    public SmartDevice(String name, EnergyType energyType) {
         this.deviceName = name;
-        this.engergyType = engergyType.name();
+        this.energyType = energyType.name();
         this.deviceId = UUID.randomUUID().toString();   //Assign a unique ID
     }
     
@@ -70,8 +70,15 @@ public class SmartDevice implements Runnable {
         this.battery = battery;
     }
     
-    public void setSimulationRate(double rate) {
+    public synchronized void setSimulationRate(double rate) {
+        if (rate < 0 || rate > 1) {
+            throw new IllegalArgumentException("Simulation rate must be between 0 and 1.");
+        }
         this.simulationRate = rate;
+    }
+
+    public double getSimulationRate() {
+        return simulationRate;
     }
 
     // get consumedEnergy 
@@ -80,13 +87,31 @@ public class SmartDevice implements Runnable {
     }
 
     public String getDeviceType() {
-        return engergyType;
+        return energyType;
+    }
+
+    private void validateEnergySource(EnergySource energySource) {
+        if (energySource != null) {
+            // Get sourceType
+            String sourceType = energySource.getSourceType();
+            // Apply validation rules
+            if ("AC".equals(energyType) && !"GRID".equals(sourceType)) {
+                throw new IllegalArgumentException(
+                    "Devices with AC energy type can only use GRID power."
+                );
+            }
+            if ("DC".equals(energyType) && !("SOLAR".equals(sourceType) || "BATTERY".equals(sourceType))) {
+                throw new IllegalArgumentException(
+                    "Devices with DC energy type can only use SOLAR or BATTERY power."
+                );
+            }
+        } else {
+            throw new IllegalArgumentException("Energy source cannot be null.");
+        }
     }
 
     public synchronized void setEnergySource(EnergySource energySource) {
-        if (energySource == null) {
-            throw new IllegalArgumentException("Energy source cannot be null.");
-        }
+        validateEnergySource(energySource);
         // get ID of the energy source
         this.energySourceID = energySource.getSourceID();
         // get sourceName from id 
@@ -98,6 +123,7 @@ public class SmartDevice implements Runnable {
     }
 
     public synchronized void setEnergySourceID(String energySourceID) {
+        validateEnergySource(EnergyManager.getInstance().getEnergySourceByID(energySourceID));
         this.energySourceID = energySourceID;
         // get sourceName from id 
         this.sourceName = EnergyManager.getInstance().getEnergySourceByID(energySourceID).getSourceName();
@@ -150,6 +176,7 @@ public class SmartDevice implements Runnable {
                         consumedEnergy += randomConsumption;
                         logger.info(String.format("Device [%s] consumed %.2f kWh from [%s]", deviceName, randomConsumption, sourceName));
                     } else {
+                        turnOff();
                         // logger.warning(String.format("Device %s failed to consume %.2f kWh from %s", deviceName, randomConsumption, sourceName));
                     }
                 }
@@ -173,7 +200,7 @@ public class SmartDevice implements Runnable {
                 "\"deviceId\":\"" + deviceId + "\"," +
                 "\"deviceName\":\"" + deviceName + "\"," +
                 "\"isActive\":" + isOn + "," +
-                "\"energyType\":\"" + engergyType + "\"," +
+                "\"energyType\":\"" + energyType + "\"," +
                 "\"batteryStatus\":" + (battery != null ? battery.getStatus() : "\"No Battery\"") + "," +
                 // "\"useIntegratedBattery\":" + useIntegratedBattery + "," +
                 // "\"energySourceID\":\"" + (energySourceID != null ? energySourceID : "None") + "\"," +
