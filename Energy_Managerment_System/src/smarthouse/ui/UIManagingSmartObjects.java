@@ -27,7 +27,10 @@ import javax.swing.JPanel;
 
 public class UIManagingSmartObjects extends javax.swing.JFrame {
 	public static final Logger logger = CustomLogger.getLogger();
-	private DeviceManagementUI deviceManagementUI;
+//	private DeviceManagementUI deviceManagementUI;
+	// get device and resource manamgerment value
+    private EnergyManager energyManager;
+	private DeviceManager deviceManager;
 	//define 
 	
 	private List<String> sourceNames;
@@ -40,15 +43,15 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     /**
      * Creates new form UIManagingSmartObjects
      */
-    public UIManagingSmartObjects(EnergyManager energyManager, DeviceManager deviceManager) throws IOException {
-    	this.energyManager = energyManager;
-    	this.deviceManager = deviceManager;
+    public UIManagingSmartObjects() throws IOException {
+//    	this.energyManager = energyManager;
+//    	this.deviceManager = deviceManager;
 //    	logger.info("----------------------------");
 //    	List<String> deviceNames = deviceManager.getAllDevicesNames();
 //		for (String name : deviceNames) {
 //			logger.info(name);
 //		}
-//    	emsInit();
+    	emsInit();
         initComponents();
         scaleImage();
     }
@@ -107,6 +110,9 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     	
     	//device manager
     	deviceManager = new DeviceManager();
+    	deviceManager.addDevice(fanDev);
+    	deviceManager.addDevice(heaterDev);
+    	deviceManager.addDevice(coolerDev);
     	
     	sourceNames = energyManager.getEnergySourceNames();
     	 
@@ -203,8 +209,7 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 
         fan.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        sourceNames = energyManager.getEnergySourceNames();
-        sourceList = sourceNames.toArray(new String[sourceNames.size()]);
+        
         fanSource.setModel(new javax.swing.DefaultComboBoxModel<>(sourceList));
         fanSource.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -428,9 +433,9 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 //            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 //            .addGap(0, 491, Short.MAX_VALUE)
 //        );
-        this.energySourceMgmtPanel = new EnergySourceManagementUI(this.energyManager);
-
-        jTabbedPane.addTab("Energy Source Management", this.energySourceMgmtPanel);
+//        this.energySourceMgmtPanel = new EnergySourceManagementUI(this.energyManager);
+//
+//        jTabbedPane.addTab("Energy Source Management", this.energySourceMgmtPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -474,10 +479,10 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         logger.info(String.format("Option value: %d", a));
         String sourceName = sourceList[a]; 
         String sourceID = energyManager.getEnergySourceIDByName(sourceName);
-        
-//        deviceManager.getDeviceByID(fanDev.getDeviceId()).setEnergySourceID(sourceID);
-        deviceManager.getDeviceByID(sourceID).getDeviceId();
-        setEnergySourceID(sourceID);
+        logger.info(String.format("Fan ID: " + fanDev.getDeviceId()));
+        deviceManager.getDeviceByID(fanDev.getDeviceId()).setEnergySourceID(sourceID);
+//        deviceManager.getDeviceByID(sourceID).getDeviceId();
+//        setEnergySourceID(sourceID);
         
         deviceManager.turnOnDevice(fanDev, false);
     }//GEN-LAST:event_onFanButtonActionPerformed
@@ -599,7 +604,5 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     private javax.swing.JButton onLightButton;
     // End of variables declaration//GEN-END:variables
     
-    // get device and resource manamgerment value
-    private EnergyManager energyManager;
-	private DeviceManager deviceManager;
+    
 }
