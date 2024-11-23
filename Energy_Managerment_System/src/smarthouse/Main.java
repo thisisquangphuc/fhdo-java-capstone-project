@@ -12,7 +12,7 @@ import smarthouse.engergy.Battery;
 import smarthouse.engergy.EnergyManager;
 import smarthouse.engergy.EnergySource;
 import smarthouse.log.CustomLogger;
-import smarthouse.ui.UIManagingSmartObjects;
+import smarthouse.ui.EnergyManangementSystemUI;
 import smarthouse.util.AsciiArtPrinter;
 
 /**
@@ -126,7 +126,7 @@ public class Main {
 			}
 
 			// Create UI
-			new UIManagingSmartObjects(energyManager, deviceManager).setVisible(true);
+			new EnergyManangementSystemUI(energyManager, deviceManager).setVisible(true);
 			
 			/* Turn on devices though the DeviceManager */
 			deviceManager.turnOnDevice(ring,false);

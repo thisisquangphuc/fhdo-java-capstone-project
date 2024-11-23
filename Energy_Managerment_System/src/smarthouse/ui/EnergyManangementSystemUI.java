@@ -16,12 +16,12 @@ import smarthouse.engergy.EnergyManager;
 import smarthouse.devices.DeviceManager;
 
 @SuppressWarnings("serial")
-public class UIManagingSmartObjects extends javax.swing.JFrame {
+public class EnergyManangementSystemUI extends javax.swing.JFrame {
 
     /**
      * Creates new form UIManagingSmartObjects
      */
-    public UIManagingSmartObjects(EnergyManager energyManager, DeviceManager deviceManager) throws IOException {
+    public EnergyManangementSystemUI(EnergyManager energyManager, DeviceManager deviceManager) throws IOException {
         this.energyManager = energyManager;
         this.deviceManager = deviceManager;
     	initComponents();
