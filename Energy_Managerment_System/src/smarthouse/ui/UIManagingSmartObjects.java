@@ -74,6 +74,60 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         scaleImage();
     }
     
+    //============for testing============================
+    public javax.swing.JButton getOnButton(String name){
+    	javax.swing.JButton onButton = null;
+    	if(name == "fan") {
+    		onButton = onFanButton;
+    	} else if(name == "heater") {
+    		onButton = onHeaterButton;
+    	} else if(name == "cooler") {
+    		onButton = onLightButton;
+    	}
+    	return onButton;
+    }
+    
+    public javax.swing.JButton getOffButton(String name){
+    	javax.swing.JButton offButton = null;
+    	if(name == "fan") {
+    		offButton = offFanButton;
+    	} else if(name == "heater") {
+    		offButton = offHeaterButton;
+    	} else if(name == "cooler") {
+    		offButton = offLightButton;
+    	}
+    	return offButton;
+    }
+    
+    public SmartDevice getDevice(String name) {
+    	SmartDevice device = null;
+    	if(name == "fan") {
+    		device = fanDev;
+    	} else if(name == "heater") {
+    		device = heaterDev;
+    	} else if(name == "cooler") {
+    		device = coolerDev;
+    	}
+    	return device;
+    }
+    
+    public javax.swing.JLabel getlabelConsume(String name){
+    	javax.swing.JLabel labelConsume = null;
+    	if(name == "fan") {
+    		labelConsume = labelFanConsum;
+    	} else if(name == "heater") {
+    		labelConsume = labelHeaterConsum;
+    	} else if(name == "cooler") {
+    		labelConsume = labelLightConsum;
+    	}
+    	return labelConsume;
+    }
+    
+    public EnergyManager getEnergyManager() {
+    	return energyManager;
+    }
+    //=====================================================
+    
     
     public void scaleImage() throws IOException{
         //String currentPath = new java.io.File(".").getCanonicalPath();
@@ -131,6 +185,7 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     	deviceManager.addDevice(fanDev);
     	deviceManager.addDevice(heaterDev);
     	deviceManager.addDevice(coolerDev);
+    	
     	
     	sourceNames = energyManager.getEnergySourceNames();
     	 
@@ -319,7 +374,7 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 
         labelFanConsum.setBackground(new java.awt.Color(255, 255, 255));
         labelFanConsum.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelFanConsum.setText("Fan: ");
+        labelFanConsum.setText("Fan:");
         labelFanConsum.setOpaque(true);
 
         labelLightRate.setBackground(new java.awt.Color(255, 255, 255));
@@ -515,8 +570,8 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     private void offFanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_offFanButtonActionPerformed
         // TODO add your handling code here:
     	deviceManager.turnOffDevice(fanDev);
-    	Instant endFan = Instant.now();
-    	Duration timeElapsed = Duration.between(startFan, endFan);
+    	stopFan = Instant.now();
+    	Duration timeElapsed = Duration.between(startFan, stopFan);
     	timeTakenForFan += (timeElapsed.toMillis())/1000;
     	labelFanRate.setText("Fan: " + timeTakenForFan + " s");
     	labelFanConsum.setText("Fan: " + round(fanDev.getConsumedEnergy(),2) + " kWh");
@@ -540,8 +595,8 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     private void offHeaterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_offHeaterButtonActionPerformed
         // TODO add your handling code here:
     	deviceManager.turnOffDevice(heaterDev);
-    	Instant endHeater = Instant.now();
-    	Duration timeElapsed = Duration.between(startHeater, endHeater);
+    	stopHeater = Instant.now();
+    	Duration timeElapsed = Duration.between(startHeater, stopHeater);
     	timeTakenForHeater += (timeElapsed.toMillis())/1000;
     	labelHeaterRate.setText("Heater: " + timeTakenForHeater + " s");
     	labelHeaterConsum.setText("Heater: " + round(heaterDev.getConsumedEnergy(),2) + " kWh");
