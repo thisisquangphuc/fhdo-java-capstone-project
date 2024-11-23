@@ -23,7 +23,7 @@ public class EnergySourceManagementUI extends JPanel {
     /**
      * Creates new form EnergySourceManagementUI
      */
-    public EnergySourceManagementUI(EnergyManager energyManager, DeviceManager deviceManager) { //throws IOException {
+    public EnergySourceManagementUI(EnergyManager energyManager, DeviceManager deviceManager) { 
         this.energyManager = energyManager;
         this.deviceManager = deviceManager;
     	initComponents();
@@ -38,6 +38,7 @@ public class EnergySourceManagementUI extends JPanel {
 
         this.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         this.setMaximumSize(new java.awt.Dimension(1500, 1000));
+        this.setPreferredSize(new java.awt.Dimension(1000, 500));
         
         // Create Panel Display for each energy source
     	for (int i=0; i<sourceNames.size(); i++) {
@@ -107,9 +108,9 @@ public class EnergySourceManagementUI extends JPanel {
 	    		remainingBarSource.get(energySourceID).setForeground(new JProgressBar().getForeground());
 	    		
 	    	} else {
-	    		chargeSourceBtn.get(energySourceID).setText("Charging");
-	    		chargeSourceBtn.get(energySourceID).setBackground(new java.awt.Color(102,204,0));
-	    		remainingBarSource.get(energySourceID).setForeground(new java.awt.Color(102,204,0));
+	    		chargeSourceBtn.get(energySourceID).setText("Un-charge");
+	    		chargeSourceBtn.get(energySourceID).setBackground(new java.awt.Color(102, 204, 0));
+	    		remainingBarSource.get(energySourceID).setForeground(new java.awt.Color(102, 204, 0));
 	    	}
     	}
     	
@@ -270,7 +271,11 @@ public class EnergySourceManagementUI extends JPanel {
     	return deviceListStr;
     }
     
-    // Button event for charging battery/panel
+    /**
+     *  Button event for charging battery/panel
+     * @param evt
+     * @param energySourceID
+     */
     private synchronized void chargeSourceBtnActionPerformed(java.awt.event.ActionEvent evt, String energySourceID) { // [TODO]                                              
         // TODO add your handling code here:
     	logger.fine(String.format("Charge Button pressed %s", energySourceID));
@@ -291,20 +296,22 @@ public class EnergySourceManagementUI extends JPanel {
      */
     private synchronized void removeSourceBtnActionPerformed(java.awt.event.ActionEvent evt, String sourceID) { // [TODO]                                               
         // TODO add your handling code here: 	
-    	logger.info(String.format("Remove %s from energy source system - %s.", 
-    			energyManager.getEnergySourceByID(sourceID).getSourceName(), this.getComponent(0).getName()));
-    	logger.fine(String.format("Remove panel index %d", 
+    	logger.fine(String.format("Remove Source %d", 
     			energyManager.getEnergySourceIDs().indexOf(sourceID)));
     	
-    	this.remove(energyManager.getEnergySourceIDs().indexOf(sourceID));
-    	energyManager.removeEnergySource(sourceID);
-    	
-    	logger.fine(String.format("%d - %d", 
-    			this.getComponentCount(), energyManager.getEnergySourceNames().size()));
-    	logger.fine(String.format("%s", this.getComponent(0).getName()));
-    	
-    	updateEnergySourceUI();
-    	
+    	// remove energy source panel from UI
+    	this.remove(this.energySourcePanel.get(sourceID));
+    	// remove components in each energy source panel
+    	energySourcePanel.remove(sourceID);
+        energySourceLabel.remove(sourceID);
+        remainingLabel.remove(sourceID);
+        remainingBarSource.remove(sourceID);
+        energyConsumedAmount.remove(sourceID);
+        deviceComsumingSource.remove(sourceID);
+        chargeSourceBtn.remove(sourceID);
+        removeSourceBtn.remove(sourceID);
+    	// remove energy source from database
+    	this.energyManager.removeEnergySource(sourceID);
     }  
     
     
@@ -383,7 +390,7 @@ public class EnergySourceManagementUI extends JPanel {
         //
         final JButton removeBtn = new JButton();
         removeBtn.setBackground(new java.awt.Color(255, 153, 153));
-        removeBtn.setText("Remove");
+        removeBtn.setText("Delete");
         removeBtn.setName(energySourceID);
         removeBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -408,14 +415,14 @@ public class EnergySourceManagementUI extends JPanel {
 	                            .addGroup(energySourcePanelLayout.createSequentialGroup()
 	                                .addComponent(remainingLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-	                                .addComponent(remainingBarSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                                .addComponent(remainingBarSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-	                                .addComponent(chargeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))))
+	                                .addComponent(chargeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))))
 	                    .addGroup(energySourcePanelLayout.createSequentialGroup()
 	                        .addGap(113, 113, 113)
-	                        .addComponent(energySourceLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                        .addComponent(energySourceLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                        .addGap(35, 35, 35)
-	                        .addComponent(removeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
+	                        .addComponent(removeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
 	                .addContainerGap(14, Short.MAX_VALUE))
 	        );
 	        energySourcePanelLayout.setVerticalGroup(
@@ -451,14 +458,14 @@ public class EnergySourceManagementUI extends JPanel {
 	                            .addGroup(energySourcePanelLayout.createSequentialGroup()
 	                                .addComponent(remainingLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-	                                .addComponent(remainingBarSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))))
+	                                .addComponent(remainingBarSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))))
 //	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 //	                                .addComponent(chargeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))))
 	                    .addGroup(energySourcePanelLayout.createSequentialGroup()
 	                        .addGap(113, 113, 113)
-	                        .addComponent(energySourceLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                        .addComponent(energySourceLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                        .addGap(35, 35, 35)
-	                        .addComponent(removeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
+	                        .addComponent(removeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
 	                .addContainerGap(14, Short.MAX_VALUE))
 	        );
 	        energySourcePanelLayout.setVerticalGroup(
