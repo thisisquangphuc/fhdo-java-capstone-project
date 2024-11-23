@@ -12,13 +12,14 @@ import java.util.logging.Logger;
 import org.json.*;
 
 import smarthouse.devices.DeviceManager;
+import smarthouse.devices.SmartDevice;
 import smarthouse.engergy.EnergyManager;
 import smarthouse.engergy.EnergySource;
 import smarthouse.engergy.EnergySource.EnergyType;
 import smarthouse.log.CustomLogger;
 
 @SuppressWarnings("serial")
-public class EnergySourceManagementUI extends JPanel {
+public class EnergySourceManagementUI extends javax.swing.JPanel {
 	
     /**
      * Creates new form EnergySourceManagementUI
@@ -83,34 +84,45 @@ public class EnergySourceManagementUI extends JPanel {
 			String energySourceID = energySourceIDs.get(i);
     		EnergySource energySource = energyManager.getEnergySourceByID(energySourceID);
 			Boolean hasBattery = isEnergySourceHasBattery(energySource);
+			JSONObject batteryStatus = this.getBatteryStatus(energySource);
+			
 			// Update energy consumed value
 	        if (sourceNames.get(i) == "Grid Power") {
-	        	energyConsumedAmount.get(energySourceID).setText(
-	        			String.format("Current energy consumed amount: \t %.3f kWh", energySource.getEnergyConsumed()));
+	        	energyConsumedAmount.get(energySourceID).setName(
+	        			String.format("%.3f", energySource.getEnergyConsumed()));
 	        } else {
-	        	energyConsumedAmount.get(energySourceID).setText(
-	        			String.format("Current energy consumed amount: \t %.3f kWh", getBatteryEnergyConsumed(energySource))); 
+	        	energyConsumedAmount.get(energySourceID).setName(
+	        			String.format("%.3f", getBatteryEnergyConsumed(batteryStatus))); 
 	        }
+	        energyConsumedAmount.get(energySourceID).setText(
+	        		String.format("Current energy consumed: %s kWh", energyConsumedAmount.get(energySourceID).getName()));
+	        energyConsumedAmount.get(energySourceID).setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 	        
-	        // Update battery source percentage value
+	        // Update battery source capacity and percentage value
 	        if (hasBattery) { 
-	        	remainingBarSource.get(energySourceID).setValue((int)getBatteryPercentage(energySource));
+	        	batteryBarSource.get(energySourceID).setValue((int)getBatteryPercentage(batteryStatus));
+	    	    batteryCapacity.get(energySourceID).setText("Battery Capacity: " + batteryStatus.getString("capacity") + " kWh");
 	        }
 	        
 	        // Update list of devices using energy source
-	        deviceComsumingSource.get(energySourceID).setText("<html> Being consumed by:" +  
-	        		this.getDeviceComsumingStr(energySource) + "</html>"); 
+	        String deviceComsumingStr = this.getDeviceComsumingStr(energySource);
+	        if (deviceComsumingStr.isBlank()) {
+	        	deviceComsumingSource.get(energySourceID).setText("No device use this source.");
+	        } else {
+	        	deviceComsumingSource.get(energySourceID).setText("<html> Devices consume energy from this source:" +  
+	        		deviceComsumingStr + "</html>"); 
+	        }
     		
 	        // Update charging status
 	    	if (Boolean.parseBoolean(new JSONObject(energySource.getStatus()).getString("isRecharging")) == false) {
 	    		chargeSourceBtn.get(energySourceID).setText("Charge");
 	    		chargeSourceBtn.get(energySourceID).setBackground(new JButton().getBackground());
-	    		remainingBarSource.get(energySourceID).setForeground(new JProgressBar().getForeground());
+	    		batteryBarSource.get(energySourceID).setForeground(new JProgressBar().getForeground());
 	    		
 	    	} else {
 	    		chargeSourceBtn.get(energySourceID).setText("Un-charge");
 	    		chargeSourceBtn.get(energySourceID).setBackground(new java.awt.Color(102, 204, 0));
-	    		remainingBarSource.get(energySourceID).setForeground(new java.awt.Color(102, 204, 0));
+	    		batteryBarSource.get(energySourceID).setForeground(new java.awt.Color(102, 204, 0));
 	    	}
     	}
     	
@@ -176,24 +188,47 @@ public class EnergySourceManagementUI extends JPanel {
      * @param energySource
      * @return
      */
-    private synchronized double getBatteryEnergyConsumed(EnergySource energySource) {
-    	JSONObject jsonStatusString = new JSONObject(energySource.getStatus());
-    	String batteryStatus = jsonStatusString.getString("batteryStatus");
+    private JSONObject getBatteryStatus(EnergySource energySource) {
+    	JSONObject jsonStatusString = new JSONObject(); 
+    	String batteryStatus = (new JSONObject(energySource.getStatus())).getString("batteryStatus");
     	
     	if (!batteryStatus.contains("No Battery")) {    	
 	    	String amountStatus = batteryStatus.substring(batteryStatus.indexOf("capacity"));
 	    	String batteryCapacity = amountStatus.substring(
 	    			 amountStatus.indexOf("=")+1, amountStatus.indexOf(","));
-	    	logger.fine(String.format("[getBatteryEnergyConsumed()] %s battery capacity %s",
-	    			energySource.getSourceName(),
-	    			batteryCapacity));
 	    	
 	    	amountStatus = batteryStatus.substring(batteryStatus.indexOf("energy_level_kWh"));
 	    	String energyLevel = amountStatus.substring(
 	    			amountStatus.indexOf("=")+1, amountStatus.indexOf(","));
-	    	logger.fine(String.format("[getBatteryEnergyConsumed()] %s battery energy_level_kWh %s",
-	    			energySource.getSourceName(),
-	    			energyLevel));
+	    	
+	    	amountStatus = batteryStatus.substring(batteryStatus.indexOf("percentage"));    	
+	    	String levelPercentage = amountStatus.substring(
+	    			amountStatus.indexOf("=")+1, amountStatus.indexOf("%"));
+	    	
+	    	jsonStatusString.put("capacity", 			batteryCapacity);
+	    	jsonStatusString.put("energy_level_kWh", 	energyLevel);
+	    	jsonStatusString.put("percentage", 			levelPercentage);
+    	} else {
+    		// [TODO] Handle error here
+    		
+    	}
+    	logger.fine(String.format("[getBatteryStatus()] %s BatteryStatus: %s", 
+    			energySource.getSourceName(), batteryStatus.toString()));
+    	return jsonStatusString;
+    }
+    
+    /**
+     * 
+     * @param energySource
+     * @return
+     */
+    private synchronized double getBatteryEnergyConsumed(JSONObject batteryStatus) {
+    	if (!batteryStatus.isEmpty()) {    	
+	    	String batteryCapacity = batteryStatus.getString("capacity");
+	    	logger.fine(String.format("[getBatteryEnergyConsumed()] battery capacity %s", batteryCapacity));
+	    	
+	    	String energyLevel = batteryStatus.getString("energy_level_kWh");
+	    	logger.fine(String.format("[getBatteryEnergyConsumed()] energy_level_kWh %s", energyLevel));
 	    			
 	    	double energyConsumed = Double.parseDouble(batteryCapacity)	- Double.parseDouble(energyLevel);	
 	    	return energyConsumed; 
@@ -208,24 +243,13 @@ public class EnergySourceManagementUI extends JPanel {
      * @param energySource
      * @return
      */
-    private synchronized double getBatteryPercentage(EnergySource energySource) {
-    	JSONObject jsonStatusString = new JSONObject(energySource.getStatus());
-    	String batteryStatus = jsonStatusString.getString("batteryStatus");
-    	
-    	if (!batteryStatus.contains("No Battery")) {    	
-	    	String amountStatus = batteryStatus.substring(batteryStatus.indexOf("energy_level_kWh"));
-	    	String energyLevel = amountStatus.substring(
-	    			amountStatus.indexOf("=")+1, amountStatus.indexOf(","));
-//	    	logger.fine("[getBatteryPercentage()] battery energy_level_kWh " + energyLevel);
+    private synchronized double getBatteryPercentage(JSONObject batteryStatus) {
+    	if (!batteryStatus.isEmpty()) {    	
+	    	String energyLevel = batteryStatus.getString("energy_level_kWh");
+	    	logger.fine(String.format("[getBatteryPercentage()] energy_level_kWh %s", energyLevel));
 	    	
-	    	batteryStatus = batteryStatus.substring(batteryStatus.indexOf("percentage"));    	
-	    	logger.fine(String.format("[getBatteryPercentage()] %s battery percentage %s",
-	    			energySource.getSourceName(),
-	    			batteryStatus.substring(
-	    					batteryStatus.indexOf("=")+1, batteryStatus.indexOf("%"))));
-	    	
-	    	double batteryPercentage = Double.parseDouble(batteryStatus.substring(
-	    			batteryStatus.indexOf("=")+1, batteryStatus.indexOf("%")));;
+	    	double batteryPercentage = Double.parseDouble(batteryStatus.getString("percentage"));
+	    	logger.fine(String.format("[getBatteryPercentage()] battery percentage %.3f", batteryPercentage));
 	    	
 	    	// If energy level fewer than 1% percent, return/display 1% 
 	    	return ((Double.parseDouble(energyLevel)>0) && (batteryPercentage==0)) ? 1: batteryPercentage;
@@ -253,19 +277,17 @@ public class EnergySourceManagementUI extends JPanel {
      * @return
      */
     private String getDeviceComsumingStr(EnergySource energySource) {
-    	List<String> deviceNameList = this.deviceManager.getAllDevicesNames();
     	List<String> deviceIDList = this.deviceManager.getAllDevicesIDs();
     	String deviceListStr = "";
     	
-    	for (int i=0; i<deviceNameList.size(); i++) {
-//        	logger.fine(String.format("[getDeviceComsumingStr] %s - %s / %s", 
-//        			deviceManager.getDeviceByID(deviceIDList.get(i)).getDeviceName(), 
-//        			deviceManager.getDeviceByID(deviceIDList.get(i)).getEnergySourceID(), 
-//        			energySource.getSourceID()));
-        	
-    		if (deviceManager.getDeviceByID(deviceIDList.get(i)).getEnergySourceID().equals(
-    						energySource.getSourceID())) {
-    			deviceListStr = deviceListStr + "<br/>" + deviceNameList.get(i);
+    	for (int i=0; i<deviceIDList.size(); i++) {
+    		SmartDevice device = this.deviceManager.getDeviceByID(deviceIDList.get(i));
+    		
+    		if (device.getEnergySourceID().equals(energySource.getSourceID())) {
+        		String deviceInfo = String.format("%s \t is %s", 
+    					device.getDeviceName(), 
+    					(device.isOn() ? "ON" : "OFF"));
+    			deviceListStr = deviceListStr + "<br/>" + deviceInfo;
     		}
     	}
     	return deviceListStr;
@@ -304,8 +326,9 @@ public class EnergySourceManagementUI extends JPanel {
     	// remove components in each energy source panel
     	energySourcePanel.remove(sourceID);
         energySourceLabel.remove(sourceID);
-        remainingLabel.remove(sourceID);
-        remainingBarSource.remove(sourceID);
+        batteryLabel.remove(sourceID);
+        batteryBarSource.remove(sourceID);
+        batteryCapacity.remove(sourceID);
         energyConsumedAmount.remove(sourceID);
         deviceComsumingSource.remove(sourceID);
         chargeSourceBtn.remove(sourceID);
@@ -322,13 +345,15 @@ public class EnergySourceManagementUI extends JPanel {
      */
     private void initEnergySourcePanel(String sourceName, String energySourceID) {
     	EnergySource energySource = this.energyManager.getEnergySourceByID(energySourceID);
-		Boolean hasBattery = isEnergySourceHasBattery(energySource);
+		Boolean hasBattery = isEnergySourceHasBattery(energySource);	
+		JSONObject batteryStatus = this.getBatteryStatus(energySource);
 		
 		// Init Elements of each Energy Source UI Panel
         energySourcePanel.put(energySourceID, new javax.swing.JPanel());  
 		energySourceLabel.put(energySourceID, new javax.swing.JLabel()); 
-        remainingLabel.put(energySourceID, new javax.swing.JLabel());
-        remainingBarSource.put(energySourceID, new javax.swing.JProgressBar());
+        batteryLabel.put(energySourceID, new javax.swing.JLabel());
+        batteryBarSource.put(energySourceID, new javax.swing.JProgressBar());
+        batteryCapacity.put(energySourceID, new javax.swing.JLabel());
         energyConsumedAmount.put(energySourceID, new javax.swing.JLabel());
         deviceComsumingSource.put(energySourceID, new javax.swing.JLabel());
         chargeSourceBtn.put(energySourceID, new javax.swing.JButton());
@@ -346,32 +371,46 @@ public class EnergySourceManagementUI extends JPanel {
         energySourceLabel.get(energySourceID).setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         //
+        if (hasBattery) { 
+	        batteryCapacity.get(energySourceID).setBackground(new java.awt.Color(255, 255, 255));
+	        batteryCapacity.get(energySourceID).setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+	        batteryCapacity.get(energySourceID).setText("Battery Capacity: " + batteryStatus.getString("capacity") + " kWh");
+        }
+        
+        //
         energyConsumedAmount.get(energySourceID).setBackground(new java.awt.Color(255, 255, 255));
         energyConsumedAmount.get(energySourceID).setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        if (sourceName == "Grid Power") {
-        	energyConsumedAmount.get(energySourceID).setText(
-        			String.format("Current energy consumed amount: \t %.3f kWh", energySource.getEnergyConsumed()));
-        } else {
-        	energyConsumedAmount.get(energySourceID).setText(
-        			String.format("Current energy consumed amount: \t %s kWh", getBatteryEnergyConsumed(energySource))); 
-        }
+//        if (sourceName == "Grid Power") {
+//        	energyConsumedAmount.get(energySourceID).setName(
+//        			String.format("%.3f", energySource.getEnergyConsumed()));
+//        } else {
+//        	energyConsumedAmount.get(energySourceID).setName(
+//        			String.format("%s", getBatteryEnergyConsumed(batteryStatus))); 
+//        }
+//        energyConsumedAmount.get(energySourceID).setText(
+//        		String.format("Current energy consumed: %s kWh", energyConsumedAmount.get(energySourceID).getName()));
         energyConsumedAmount.get(energySourceID).setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         //
         // if pin battery or solar panel
-        remainingBarSource.get(energySourceID).setToolTipText("");
-        if (hasBattery) { 
-        	remainingBarSource.get(energySourceID).setValue((int)getBatteryPercentage(energySource));
-        }
-        remainingBarSource.get(energySourceID).setStringPainted(true);
+//        batteryBarSource.get(energySourceID).setToolTipText("");
+//        if (hasBattery) { 
+//        	batteryBarSource.get(energySourceID).setValue((int)getBatteryPercentage(batteryStatus));
+//        }
+        batteryBarSource.get(energySourceID).setStringPainted(true);
 
-        remainingLabel.get(energySourceID).setText("Remaining amount:");
+        batteryLabel.get(energySourceID).setText("Battery Percentage:");
         
         //
+//        String deviceComsumingStr = this.getDeviceComsumingStr(energySource);
         deviceComsumingSource.get(energySourceID).setBackground(new java.awt.Color(255, 255, 255));
         deviceComsumingSource.get(energySourceID).setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        deviceComsumingSource.get(energySourceID).setText("<html> Being consumed by:" +  
-        		this.getDeviceComsumingStr(energySource) + "</html>"); 
+//        if (deviceComsumingStr.isBlank()) {
+//        	deviceComsumingSource.get(energySourceID).setText("No device use this source.");
+//        } else {
+//        	deviceComsumingSource.get(energySourceID).setText("<html>  Devices consume energy from this source: " +  
+//        		deviceComsumingStr + "</html>"); 
+//        }
         deviceComsumingSource.get(energySourceID).setVerticalAlignment(javax.swing.SwingConstants.TOP);
         
         //
@@ -412,15 +451,16 @@ public class EnergySourceManagementUI extends JPanel {
 	                        .addGroup(energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 	                            .addComponent(deviceComsumingSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                            .addComponent(energyConsumedAmount.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                            .addComponent(batteryCapacity.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                            .addGroup(energySourcePanelLayout.createSequentialGroup()
-	                                .addComponent(remainingLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                                .addComponent(batteryLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-	                                .addComponent(remainingBarSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                                .addComponent(batteryBarSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 	                                .addComponent(chargeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))))
 	                    .addGroup(energySourcePanelLayout.createSequentialGroup()
 	                        .addGap(113, 113, 113)
-	                        .addComponent(energySourceLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                        .addComponent(energySourceLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                        .addGap(35, 35, 35)
 	                        .addComponent(removeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
 	                .addContainerGap(14, Short.MAX_VALUE))
@@ -434,9 +474,11 @@ public class EnergySourceManagementUI extends JPanel {
 	                    .addComponent(removeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
 	                .addGap(20, 20, 20)
 	                .addGroup(energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-	                    .addComponent(remainingLabel.get(energySourceID))
-	                    .addComponent(remainingBarSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                    .addComponent(batteryLabel.get(energySourceID))
+	                    .addComponent(batteryBarSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                    .addComponent(chargeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+	                .addComponent(batteryCapacity.get(energySourceID))
 	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 	                .addComponent(energyConsumedAmount.get(energySourceID))
 	                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -456,14 +498,14 @@ public class EnergySourceManagementUI extends JPanel {
 	                            .addComponent(deviceComsumingSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                            .addComponent(energyConsumedAmount.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                            .addGroup(energySourcePanelLayout.createSequentialGroup()
-	                                .addComponent(remainingLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                                .addComponent(batteryLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-	                                .addComponent(remainingBarSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))))
+	                                .addComponent(batteryBarSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))))
 //	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 //	                                .addComponent(chargeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))))
 	                    .addGroup(energySourcePanelLayout.createSequentialGroup()
 	                        .addGap(113, 113, 113)
-	                        .addComponent(energySourceLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                        .addComponent(energySourceLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                        .addGap(35, 35, 35)
 	                        .addComponent(removeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
 	                .addContainerGap(14, Short.MAX_VALUE))
@@ -477,8 +519,8 @@ public class EnergySourceManagementUI extends JPanel {
 		                    .addComponent(removeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
 		                .addGap(30, 30, 30)
 		                .addGroup(energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-		                    .addComponent(remainingLabel.get(energySourceID))
-		                    .addComponent(remainingBarSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
+		                    .addComponent(batteryLabel.get(energySourceID))
+		                    .addComponent(batteryBarSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
 //		                    .addComponent(chargeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
 		                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 		                .addComponent(energyConsumedAmount.get(energySourceID))
@@ -499,17 +541,17 @@ public class EnergySourceManagementUI extends JPanel {
 	                            .addComponent(deviceComsumingSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                            .addComponent(energyConsumedAmount.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
 //	                            .addGroup(energySourcePanelLayout.createSequentialGroup()
-//	                                .addComponent(remainingLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+//	                                .addComponent(batteryLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
 //	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-//	                                .addComponent(remainingBarSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))))
+//	                                .addComponent(batteryBarSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))))
 //	                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
 //	                                .addComponent(chargeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))))
 	                            ))
 	                    .addGroup(energySourcePanelLayout.createSequentialGroup()
 	                        .addGap(113, 113, 113)
-	                        .addComponent(energySourceLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+	                        .addComponent(energySourceLabel.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
 	                        .addGap(35, 35, 35)
-	                        .addComponent(removeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
+	                        .addComponent(removeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
 	                .addContainerGap(14, Short.MAX_VALUE))
 	        );
 	        energySourcePanelLayout.setVerticalGroup(
@@ -521,8 +563,8 @@ public class EnergySourceManagementUI extends JPanel {
 		                    .addComponent(removeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
 		                .addGap(30, 30, 30)
 //		                .addGroup(energySourcePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-//		                    .addComponent(remainingLabel.get(energySourceID))
-//		                    .addComponent(remainingBarSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+//		                    .addComponent(batteryLabel.get(energySourceID))
+//		                    .addComponent(batteryBarSource.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
 //		                    .addComponent(chargeSourceBtn.get(energySourceID), javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
 		                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 		                .addComponent(energyConsumedAmount.get(energySourceID))
@@ -541,8 +583,9 @@ public class EnergySourceManagementUI extends JPanel {
 
     private Map<String, javax.swing.JPanel> 		energySourcePanel 		= new HashMap<>();
     private Map<String, javax.swing.JLabel> 		energySourceLabel 		= new HashMap<>();
-    private Map<String, javax.swing.JLabel> 		remainingLabel 			= new HashMap<>();
-    private Map<String, javax.swing.JProgressBar> 	remainingBarSource 		= new HashMap<>();
+    private Map<String, javax.swing.JLabel> 		batteryLabel 			= new HashMap<>();
+    private Map<String, javax.swing.JProgressBar> 	batteryBarSource 		= new HashMap<>();
+    private Map<String, javax.swing.JLabel> 		batteryCapacity 		= new HashMap<>();
     private Map<String, javax.swing.JLabel> 		energyConsumedAmount 	= new HashMap<>();
     private Map<String, javax.swing.JLabel> 		deviceComsumingSource 	= new HashMap<>();
     private Map<String, javax.swing.JButton> 		chargeSourceBtn 		= new HashMap<>();
