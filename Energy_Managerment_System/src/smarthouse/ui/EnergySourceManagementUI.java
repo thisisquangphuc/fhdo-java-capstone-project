@@ -24,9 +24,16 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
     /**
      * Creates new form EnergySourceManagementUI
      */
-    public EnergySourceManagementUI(EnergyManager energyManager, DeviceManager deviceManager) { 
+    public EnergySourceManagementUI(EnergyManager energyManager, DeviceManager deviceManager) {  
         this.energyManager = energyManager;
         this.deviceManager = deviceManager;
+    	initComponents();
+    }
+    
+    public EnergySourceManagementUI(EnergyManager energyManager, DeviceManager deviceManager, Boolean timerStatus) { 
+        this.energyManager = energyManager;
+        this.deviceManager = deviceManager;
+        this.isTimerOn = timerStatus;
     	initComponents();
     }
 	
@@ -52,16 +59,18 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
     	//
     	updateEnergySourceUI();
     	
-    	// Create timer to get and refresh data/info on UI periodically
-        ActionListener displayUITask = new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-            	logger.fine("Refresh UI data");
-            	updateEnergySourceUI();
-            }
-        };
-        Timer timer = new Timer(300 ,displayUITask);
-        timer.setRepeats(true);
-        timer.start();
+        if (isTimerOn==true) {
+	    	// Create timer to get and refresh data/info on UI periodically
+	        ActionListener displayUITask = new ActionListener() {
+	            public void actionPerformed(ActionEvent evt) {
+	            	logger.fine("Refresh UI data");
+	            	updateEnergySourceUI();
+	            }
+	        };
+	        Timer timer = new Timer(300 ,displayUITask);
+	        timer.setRepeats(true);
+        	timer.start();
+        }
     }
     
     
@@ -87,7 +96,7 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
 			JSONObject batteryStatus = this.getBatteryStatus(energySource);
 			
 			// Update energy consumed value
-	        if (sourceNames.get(i) == "Grid Power") {
+	        if (energySource.getSourceType().equals(EnergyType.GRID.name())) {
 	        	energyConsumedAmount.get(energySourceID).setName(
 	        			String.format("%.3f", energySource.getEnergyConsumed()));
 	        } else {
@@ -177,11 +186,6 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
         );
     }
     
-	
-    // Add new energy source to the system
-//	private void addEnergySource() { // TODO
-//		
-//	}
     
     /**
      * 
@@ -298,7 +302,7 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
      * @param evt
      * @param energySourceID
      */
-    private synchronized void chargeSourceBtnActionPerformed(java.awt.event.ActionEvent evt, String energySourceID) { // [TODO]                                              
+    public synchronized void chargeSourceBtnActionPerformed(java.awt.event.ActionEvent evt, String energySourceID) {                                              
         // TODO add your handling code here:
     	logger.fine(String.format("Charge Button pressed %s", energySourceID));
     	
@@ -316,7 +320,7 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
      * @param evt
      * @param sourceID
      */
-    private synchronized void removeSourceBtnActionPerformed(java.awt.event.ActionEvent evt, String sourceID) { // [TODO]                                               
+    public synchronized void removeSourceBtnActionPerformed(java.awt.event.ActionEvent evt, String sourceID) {                                               
         // TODO add your handling code here: 	
     	logger.fine(String.format("Remove Source %d", 
     			energyManager.getEnergySourceIDs().indexOf(sourceID)));
@@ -575,10 +579,37 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
         }
     }
     
+    
 	
-    // Variables declaration 
+    public Map<String, javax.swing.JPanel> getEnergySourcePanel() {
+		return energySourcePanel;
+	}
+
+	public Map<String, javax.swing.JLabel> getEnergySourceLabel() {
+		return energySourceLabel;
+	}
+
+	public Map<String, javax.swing.JButton> getChargeSourceBtn() {
+		return chargeSourceBtn;
+	}
+
+	public Map<String, javax.swing.JButton> getRemoveSourceBtn() {
+		return removeSourceBtn;
+	}
+	
+	public Map<String, javax.swing.JLabel> getDeviceComsumingSource() {
+		return deviceComsumingSource;
+	}
+
+	public void setTimerStatus(Boolean on) {
+		this.isTimerOn = on;
+	}
+
+	
+	// Variables declaration 
 	private EnergyManager energyManager;
 	private DeviceManager deviceManager;
+	private Boolean isTimerOn = true;
 	private static final Logger logger = CustomLogger.getLogger();
 
     private Map<String, javax.swing.JPanel> 		energySourcePanel 		= new HashMap<>();
