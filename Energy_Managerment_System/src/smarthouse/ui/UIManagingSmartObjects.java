@@ -17,6 +17,7 @@ import smarthouse.engergy.EnergySource;
 import smarthouse.log.CustomLogger;
 
 
+import java.awt.Color;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.IOException;
@@ -47,6 +48,9 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 	private SmartDevice heaterDev = new SmartDevice("Living Room Heater", SmartDevice.EnergyType.AC);
 	
 	// timer
+	private Instant oldStartFan;
+	private Instant oldStartHeater;
+	private Instant oldStartCooler;
 	private Instant startFan;
 	private Instant stopFan;
 	private Instant startHeater;
@@ -196,7 +200,6 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() throws IOException {
 
-        jPanel1 = new javax.swing.JPanel();
         
         energyButton = new javax.swing.JButton();
         devicesButton = new javax.swing.JButton();
@@ -222,52 +225,12 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         labelLightRate = new javax.swing.JLabel();
         labelHeaterConsum = new javax.swing.JLabel();
         labelLightConsum = new javax.swing.JLabel();
-//        jPanel3 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Smart Hause");
         setSize(new java.awt.Dimension(100, 100));
 
-        jPanel1.setBackground(new java.awt.Color(51, 255, 255));
 
-        energyButton.setText("Energy Source Management");
-        energyButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                energyButtonActionPerformed(evt);
-            }
-        });
-
-        devicesButton.setText("Devices Management");
-        devicesButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                devicesButtonActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(energyButton, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(27, 27, 27)
-                        .addComponent(devicesButton)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(devicesButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(70, 70, 70)
-                .addComponent(energyButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(207, 207, 207))
-        );
 
         jTabbedPane.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
 
@@ -479,20 +442,7 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
                 .addGap(64, 64, 64))
         );
         
-        //this.deviceManagementUI = new DeviceManagementUI();
-//        deviceManagementUI = new DeviceManagementUI();
         jTabbedPane.addTab("Devices Management", jPanel2);
-
-//        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-//        jPanel3.setLayout(jPanel3Layout);
-//        jPanel3Layout.setHorizontalGroup(
-//            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//            .addGap(0, 760, Short.MAX_VALUE)
-//        );
-//        jPanel3Layout.setVerticalGroup(
-//            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//            .addGap(0, 491, Short.MAX_VALUE)
-//        );
         
         this.energySourceMgmtPanel = new EnergySourceManagementUI(this.energyManager, this.deviceManager);
 
@@ -503,40 +453,38 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
                 .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void energyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyButtonActionPerformed
-        // TODO add your handling code here:
-//    	jTabbedPane.setSelectedIndex(1);
-    }//GEN-LAST:event_energyButtonActionPerformed
-
-    private void devicesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_devicesButtonActionPerformed
-        // TODO add your handling code here:
-//    	jTabbedPane.setSelectedIndex(0);
-    }//GEN-LAST:event_devicesButtonActionPerformed
-
     private void onFanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onFanButtonActionPerformed
-        // TODO add your handling code here:
+    	// TODO add your handling code here:
         int a = fanSource.getSelectedIndex();
         logger.info(String.format("Option value: %d", a));
         String sourceName = sourceList[a]; 
         String sourceID = energyManager.getEnergySourceIDByName(sourceName);
+        
         logger.info(String.format("Fan ID: " + fanDev.getDeviceId()));       
         try {
         	deviceManager.getDeviceByID(fanDev.getDeviceId()).setEnergySourceID(sourceID);
-        	deviceManager.turnOnDevice(fanDev, false);
-            startFan = Instant.now();
+        	if(energyManager.getEnergySourceByID(sourceID).getAvailableEnergy() > 0) {
+        		deviceManager.turnOnDevice(fanDev, false);
+            	onFanButton.setBackground(Color.GREEN);
+            	offFanButton.setBackground(null);
+                startFan = Instant.now();
+        	}
+        	else {
+        		offFanButton.setBackground(Color.GREEN);
+            	onFanButton.setBackground(null);
+        		setWarningMsg("Energy source does not have sufficient energy");
+        	}
         } catch(IllegalArgumentException e) {
         	setWarningMsg(e.getMessage());
         }
@@ -544,13 +492,47 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     }//GEN-LAST:event_onFanButtonActionPerformed
 
     private void offFanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_offFanButtonActionPerformed
-        // TODO add your handling code here:
-    	deviceManager.turnOffDevice(fanDev);
-    	stopFan = Instant.now();
-    	Duration timeElapsed = Duration.between(startFan, stopFan);
-    	timeTakenForFan += (timeElapsed.toMillis())/1000;
-    	labelFanRate.setText("Fan: " + timeTakenForFan + " s");
-    	labelFanConsum.setText("Fan: " + round(fanDev.getConsumedEnergy(),2) + " kWh");
+    	// TODO add your handling code here:
+    	long checkDiffStartPoint = 0;
+    	if(fanDev.isOn()) {
+    		deviceManager.turnOffDevice(fanDev);
+    		offFanButton.setBackground(Color.GREEN);
+        	onFanButton.setBackground(null);
+        	stopFan = Instant.now();
+        	Duration timeElapsed = Duration.between(startFan, stopFan);
+        	timeTakenForFan += (timeElapsed.toMillis())/1000;
+        	oldStartFan = startFan;
+        	labelFanRate.setText("Fan: " + timeTakenForFan + " s");
+        	labelFanConsum.setText("Fan: " + round(fanDev.getConsumedEnergy(),2) + " kWh");
+    	}
+    	else {
+    		if(startFan != null) {
+	    		offFanButton.setBackground(Color.GREEN);
+	        	onFanButton.setBackground(null);
+	        	Duration startElapsed = Duration.between(startFan, oldStartFan);
+    	    	checkDiffStartPoint = (startElapsed.toMillis())/1000;
+	        	if(checkDiffStartPoint != 0) {
+		        	stopFan = Instant.now();
+		        	Duration timeElapsed = Duration.between(startFan, stopFan);
+		        	timeTakenForFan += (timeElapsed.toMillis())/1000;
+		        	oldStartFan = startFan;
+		        	labelFanRate.setText("Fan: " + timeTakenForFan + " s");
+	        	}
+	        	else {
+	        		labelFanRate.setText("Fan: " + timeTakenForFan + " s");
+	        	}
+	        	labelFanConsum.setText("Fan: " + round(fanDev.getConsumedEnergy(),2) + " kWh");
+	    		setWarningMsg("Fan is already off");
+    		}
+    		else {
+    			offFanButton.setBackground(Color.GREEN);
+	        	onFanButton.setBackground(null);
+	        	labelFanRate.setText("Fan: " + timeTakenForFan + " s");
+	        	labelFanConsum.setText("Fan: " + round(fanDev.getConsumedEnergy(),2) + " kWh");
+	    		setWarningMsg("Fan is already off");
+    		}
+    	}
+    	
     }//GEN-LAST:event_offFanButtonActionPerformed
 
     private void onHeaterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onHeaterButtonActionPerformed
@@ -560,9 +542,12 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         String sourceName = sourceList[a]; 
         String sourceID = energyManager.getEnergySourceIDByName(sourceName);
         try {
-            deviceManager.getDeviceByID(heaterDev.getDeviceId()).setEnergySourceID(sourceID);        
+            deviceManager.getDeviceByID(heaterDev.getDeviceId()).setEnergySourceID(sourceID);
             deviceManager.turnOnDevice(heaterDev, false);
+            onHeaterButton.setBackground(Color.GREEN);
+        	offHeaterButton.setBackground(null);
             startHeater = Instant.now();
+            
         } catch(IllegalArgumentException e) {	
         	setWarningMsg(e.getMessage());
         }     
@@ -570,12 +555,45 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 
     private void offHeaterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_offHeaterButtonActionPerformed
         // TODO add your handling code here:
-    	deviceManager.turnOffDevice(heaterDev);
-    	stopHeater = Instant.now();
-    	Duration timeElapsed = Duration.between(startHeater, stopHeater);
-    	timeTakenForHeater += (timeElapsed.toMillis())/1000;
-    	labelHeaterRate.setText("Heater: " + timeTakenForHeater + " s");
-    	labelHeaterConsum.setText("Heater: " + round(heaterDev.getConsumedEnergy(),2) + " kWh");
+    	long checkDiffStartPoint = 0;
+    	if(heaterDev.isOn()) {
+    		deviceManager.turnOffDevice(heaterDev);
+	    	offHeaterButton.setBackground(Color.GREEN);
+        	onHeaterButton.setBackground(null);
+	    	stopHeater = Instant.now();
+	    	Duration timeElapsed = Duration.between(startHeater, stopHeater);
+	    	timeTakenForHeater += (timeElapsed.toMillis())/1000;
+        	oldStartHeater = startHeater;
+        	labelHeaterRate.setText("Heater: " + timeTakenForHeater + " s");
+	    	labelHeaterConsum.setText("Heater: " + round(heaterDev.getConsumedEnergy(),2) + " kWh");
+    	}
+    	else {
+    		if(startHeater != null) {
+	    		offHeaterButton.setBackground(Color.GREEN);
+	        	onHeaterButton.setBackground(null);
+	        	Duration startElapsed = Duration.between(startHeater, oldStartHeater);
+    	    	checkDiffStartPoint = (startElapsed.toMillis())/1000;
+	        	if(checkDiffStartPoint != 0) {
+		        	stopHeater = Instant.now();
+		        	Duration timeElapsed = Duration.between(startHeater, stopHeater);
+		        	timeTakenForHeater += (timeElapsed.toMillis())/1000;
+		        	oldStartHeater = startHeater;
+		        	labelHeaterRate.setText("Heater: " + timeTakenForHeater + " s");
+	        	}
+	        	else {
+	        		labelHeaterRate.setText("Heater: " + timeTakenForHeater + " s");
+	        	}
+	        	labelHeaterConsum.setText("Heater: " + round(heaterDev.getConsumedEnergy(),2) + " kWh");
+	    		setWarningMsg("Heater is already off");
+    		}
+    		else {
+    			offHeaterButton.setBackground(Color.GREEN);
+	        	onHeaterButton.setBackground(null);
+	        	labelHeaterRate.setText("Heater: " + timeTakenForHeater + " s");
+	        	labelHeaterConsum.setText("Heater: " + round(heaterDev.getConsumedEnergy(),2) + " kWh");
+	    		setWarningMsg("Heater is already off");
+    		}
+    	}
     }//GEN-LAST:event_offHeaterButtonActionPerformed
 
     private void onLightButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onLightButtonActionPerformed
@@ -586,8 +604,18 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         String sourceID = energyManager.getEnergySourceIDByName(sourceName);
         try {
             deviceManager.getDeviceByID(coolerDev.getDeviceId()).setEnergySourceID(sourceID);
-        	deviceManager.turnOnDevice(coolerDev, false);
-            startCooler = Instant.now();
+            if(energyManager.getEnergySourceByID(sourceID).getAvailableEnergy() > 0) {
+            	deviceManager.turnOnDevice(coolerDev, false);
+            	onLightButton.setBackground(Color.GREEN);
+            	offLightButton.setBackground(null);
+                startCooler = Instant.now();
+        	}
+        	else {
+        		offLightButton.setBackground(Color.GREEN);
+        		onLightButton.setBackground(null);
+        		setWarningMsg("Energy source does not have sufficient energy");
+        	}
+        	
         } catch(IllegalArgumentException e) {	
         	setWarningMsg(e.getMessage());
         }                
@@ -596,60 +624,51 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 
     private void offLightButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_offLightButtonActionPerformed
         // TODO add your handling code here:
-    	deviceManager.turnOffDevice(coolerDev);
-    	stopCooler = Instant.now();
-    	Duration timeElapsed = Duration.between(startCooler, stopCooler);
-    	timeTakenForCooler += (timeElapsed.toMillis())/1000;
-    	labelLightRate.setText("Cooler: " + timeTakenForCooler + " s");
-    	labelLightConsum.setText("Cooler: " + round(coolerDev.getConsumedEnergy(),2) + " kWh");
+    	long checkDiffStartPoint = 0;
+    	if(coolerDev.isOn()) {
+    		deviceManager.turnOffDevice(coolerDev);
+	    	offLightButton.setBackground(Color.GREEN);
+        	onLightButton.setBackground(null);
+	    	stopCooler = Instant.now();
+	    	Duration timeElapsed = Duration.between(startCooler, stopCooler);
+	    	timeTakenForCooler += (timeElapsed.toMillis())/1000;
+        	oldStartCooler = startCooler;
+        	labelLightRate.setText("Cooler: " + timeTakenForCooler + " s");
+	    	labelLightConsum.setText("Cooler: " + round(coolerDev.getConsumedEnergy(),2) + " kWh");
+    	}
+    	else {
+    		if(startCooler != null) {
+	    		offLightButton.setBackground(Color.GREEN);
+	        	onLightButton.setBackground(null);
+	        	Duration startElapsed = Duration.between(startCooler, oldStartCooler);
+    	    	checkDiffStartPoint = (startElapsed.toMillis())/1000;
+	        	if(checkDiffStartPoint != 0) {
+		        	stopCooler = Instant.now();
+		        	Duration timeElapsed = Duration.between(startCooler, stopCooler);
+		        	timeTakenForCooler += (timeElapsed.toMillis())/1000;
+		        	oldStartCooler = startCooler;
+		        	labelLightRate.setText("Cooler: " + timeTakenForCooler + " s");
+	        	}
+	        	else {
+	        		labelLightRate.setText("Cooler: " + timeTakenForCooler + " s");
+	        	}
+	        	labelLightConsum.setText("Cooler: " + round(coolerDev.getConsumedEnergy(),2) + " kWh");
+	    		setWarningMsg("Cooler is already off");
+    		}
+    		else {
+    			offLightButton.setBackground(Color.GREEN);
+	        	onLightButton.setBackground(null);
+	        	labelLightRate.setText("Cooler: " + timeTakenForCooler + " s");
+	        	labelLightConsum.setText("Cooler: " + round(coolerDev.getConsumedEnergy(),2) + " kWh");
+	    		setWarningMsg("Cooler is already off");
+    		}
+    	}
     }//GEN-LAST:event_offLightButtonActionPerformed
 
     /**
      * @param args the command line arguments
      */
-//     public static void main(String args[]) {
-//         /* Set the Nimbus look and feel */
-//         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-//          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-//          */
-    	
-    	
-//         try {
-//             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                 if ("Nimbus".equals(info.getName())) {
-//                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                     break;
-//                 }
-//             }
-//         } catch (ClassNotFoundException ex) {
-//             java.util.logging.Logger.getLogger(UIManagingSmartObjects.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//         } catch (InstantiationException ex) {
-//             java.util.logging.Logger.getLogger(UIManagingSmartObjects.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//         } catch (IllegalAccessException ex) {
-//             java.util.logging.Logger.getLogger(UIManagingSmartObjects.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//             java.util.logging.Logger.getLogger(UIManagingSmartObjects.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//         }
-//         //</editor-fold>
 
-//         /* Create and display the form */
-//         java.awt.EventQueue.invokeLater(new Runnable() {
-//             public void run() {
-//                 try {
-//                 	UIManagingSmartObjects UI = new UIManagingSmartObjects();
-//                     UI.setVisible(true);
-//                     //======================================================
-              
-// //                    UI.fanSource.setModel(new javax.swing.DefaultComboBoxModel<>(sourceList));
-// //                    UI.heaterSource.setModel(new javax.swing.DefaultComboBoxModel<>(sourceList));
-// //                    UI.lightSource.setModel(new javax.swing.DefaultComboBoxModel<>(sourceList));
-//                 } catch (IOException ex) {
-//                     Logger.getLogger(UIManagingSmartObjects.class.getName()).log(Level.SEVERE, null, ex);
-//                 }
-//             }
-//         });
-//     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton devicesButton;
@@ -660,7 +679,7 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> heaterSource;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JPanel jPanel1;
+//    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private EnergySourceManagementUI energySourceMgmtPanel;
 //    private javax.swing.JPanel jPanel3;

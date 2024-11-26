@@ -6,11 +6,30 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import smarthouse.ui.UIManagingSmartObjects;
+import smarthouse.engergy.Battery;
+import smarthouse.engergy.EnergyManager;
+import smarthouse.engergy.EnergySource;
 class UIManagingSmartObjectsTest {
 	private UIManagingSmartObjects UI;
 	@BeforeEach
 	void setUp() throws Exception {
-		 UI = new UIManagingSmartObjects();
+		EnergyManager energyManager = EnergyManager.getInstance();
+		
+		// Create Engery Sources
+		Battery battery1 = new Battery(100, 70);
+		EnergySource powerBank = new EnergySource("Power Bank", EnergySource.EnergyType.BATTERY, battery1);
+
+		Battery battery2 = new Battery(1000, 1);
+		EnergySource solar = new EnergySource("Home Solar", EnergySource.EnergyType.SOLAR, battery2);
+
+		EnergySource grid = new EnergySource("Grid Power", EnergySource.EnergyType.GRID);
+		
+		// Add energy sources to the EnergyManager
+		energyManager.addEnergySource(powerBank);
+		energyManager.addEnergySource(solar);
+		energyManager.addEnergySource(grid);
+		
+		 UI = new UIManagingSmartObjects(energyManager);
 		 UI.setVisible(true);
 	}
 
