@@ -12,6 +12,7 @@ import smarthouse.engergy.EnergySource;
 import smarthouse.log.CustomLogger;
 import smarthouse.ui.UIManagingSmartObjects;
 import smarthouse.util.AsciiArtPrinter;
+import smarthouse.util.ConfigManager;
 
 /**
  * 
@@ -39,8 +40,12 @@ public class Main {
 
 		try {
 			
-			/* Initialize data */ 
-
+			/* Get config */ 
+			ConfigManager config = ConfigManager.getInstance();
+            config.loadSettings("appconfig.properties");
+            
+            logger.info("Settings loaded successfully!");
+			
 			/* Initialize EnergyManager */
 			EnergyManager energyManager = EnergyManager.getInstance();
 	

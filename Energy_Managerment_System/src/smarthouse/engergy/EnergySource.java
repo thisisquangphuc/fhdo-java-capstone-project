@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.UUID;
 import java.util.logging.Logger;
 import smarthouse.log.CustomLogger;
+import smarthouse.util.ConfigManager;
 
 public class EnergySource {
     //declare logger
@@ -21,6 +22,9 @@ public class EnergySource {
     private boolean isRecharging = false;
     private Thread rechargeThread;
 
+    // Time setting
+    private int charging_start_time = ConfigManager.getInstance().getIntProperty("charging.start_time", 10);
+    private int charging_end_time = ConfigManager.getInstance().getIntProperty("charging.end_time", 17);
     // define Enger Type
     public enum EnergyType {
         SOLAR, GRID, BATTERY
@@ -158,7 +162,7 @@ public class EnergySource {
 
     private boolean isInRechargeTimeRange() {
         LocalTime now = LocalTime.now();
-        return now.isAfter(LocalTime.of(1, 0)) && now.isBefore(LocalTime.of(23, 0));
+        return now.isAfter(LocalTime.of(charging_start_time, 0)) && now.isBefore(LocalTime.of(charging_end_time, 0));
     }
 
     // Get energy consumed (for GRID source)
