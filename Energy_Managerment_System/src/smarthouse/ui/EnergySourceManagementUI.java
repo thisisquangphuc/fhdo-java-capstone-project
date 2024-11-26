@@ -286,13 +286,14 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
     	
     	for (int i=0; i<deviceIDList.size(); i++) {
     		SmartDevice device = this.deviceManager.getDeviceByID(deviceIDList.get(i));
-    		
-    		if (device.getEnergySourceID().equals(energySource.getSourceID())) {
-        		String deviceInfo = String.format("%s \t is %s", 
-    					device.getDeviceName(), 
-    					(device.isOn() ? "ON" : "OFF"));
-    			deviceListStr = deviceListStr + "<br/>" + deviceInfo;
-    		}
+    		if(device.getEnergySourceID() != null) {
+				if (device.getEnergySourceID().equals(energySource.getSourceID())) {
+					String deviceInfo = String.format("%s \t is %s", 
+							device.getDeviceName(), 
+							(device.isOn() ? "ON" : "OFF"));
+					deviceListStr = deviceListStr + "<br/>" + deviceInfo;
+				}
+			}
     	}
     	return deviceListStr;
     }

@@ -16,6 +16,7 @@ import smarthouse.engergy.EnergyManager;
 import smarthouse.engergy.EnergySource;
 import smarthouse.log.CustomLogger;
 
+
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.IOException;
@@ -492,9 +493,10 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 //            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 //            .addGap(0, 491, Short.MAX_VALUE)
 //        );
-//        this.energySourceMgmtPanel = new EnergySourceManagementUI(this.energyManager);
-//
-//        jTabbedPane.addTab("Energy Source Management", this.energySourceMgmtPanel);
+        
+        this.energySourceMgmtPanel = new EnergySourceManagementUI(this.energyManager, this.deviceManager);
+
+        jTabbedPane.addTab("Energy Source Management", this.energySourceMgmtPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
