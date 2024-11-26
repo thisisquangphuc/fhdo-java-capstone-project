@@ -137,6 +137,8 @@ public class EnergySource {
                 }
             }
 
+            isRecharging = false;
+
             if (!isInRechargeTimeRange()) {
                 logger.info(String.format("Recharging thread for %s stopped: OUT OF RECHARGE TIME RANGE", sourceID));
             } else {
@@ -156,7 +158,7 @@ public class EnergySource {
 
     private boolean isInRechargeTimeRange() {
         LocalTime now = LocalTime.now();
-        return now.isAfter(LocalTime.of(1, 0)) && now.isBefore(LocalTime.of(15, 0));
+        return now.isAfter(LocalTime.of(1, 0)) && now.isBefore(LocalTime.of(23, 0));
     }
 
     // Get energy consumed (for GRID source)
@@ -170,11 +172,11 @@ public class EnergySource {
     // Status string
     public synchronized String getStatus() {
         return "{" +
-                "\"sourceName\":\"" + sourceName + "\"," +
-                "\"sourceType\":\"" + sourceType + "\"," +
-                "\"isRecharging\":" + isRecharging + "," +
+                "	\"sourceName\":		\"" + sourceName + 		"\"," +
+                "	\"sourceType\":		\"" + sourceType + 		"\"," +
+                "	\"isRecharging\":	\"" + isRecharging + 	"\"," +
                 // "\"rechargeRate_kWh\":" + rechargeRate + "," +
-                "\"batteryStatus\":" + (battery != null ? battery.getStatus() : "\"No Battery\"") +
+                "	\"batteryStatus\":	\"" + (battery != null ? battery.getStatus() : "No Battery") + "\"," +
                 "}";
     }
 }
