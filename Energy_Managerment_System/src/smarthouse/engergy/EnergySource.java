@@ -170,11 +170,11 @@ public class EnergySource {
     // Status string
     public synchronized String getStatus() {
         return "{" +
-                "\"sourceName\":\"" + sourceName + "\"," +
-                "\"sourceType\":\"" + sourceType + "\"," +
-                "\"isRecharging\":" + isRecharging + "," +
+                "	\"sourceName\":		\"" + sourceName + 		"\"," +
+                "	\"sourceType\":		\"" + sourceType + 		"\"," +
+                "	\"isRecharging\":	\"" + isRecharging + 	"\"," +
                 // "\"rechargeRate_kWh\":" + rechargeRate + "," +
-                "\"batteryStatus\":" + (battery != null ? battery.getStatus() : "\"No Battery\"") +
+                "	\"batteryStatus\":	\"" + (battery != null ? battery.getStatus() : "No Battery") + "\"," +
                 "}";
     }
 }
