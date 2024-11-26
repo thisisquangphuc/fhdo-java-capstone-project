@@ -48,6 +48,9 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 	private SmartDevice heaterDev = new SmartDevice("Living Room Heater", SmartDevice.EnergyType.AC);
 	
 	// timer
+	private Instant oldStartFan;
+	private Instant oldStartHeater;
+	private Instant oldStartCooler;
 	private Instant startFan;
 	private Instant stopFan;
 	private Instant startHeater;
@@ -528,18 +531,26 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     }//GEN-LAST:event_devicesButtonActionPerformed
 
     private void onFanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onFanButtonActionPerformed
-        // TODO add your handling code here:
+    	// TODO add your handling code here:
         int a = fanSource.getSelectedIndex();
         logger.info(String.format("Option value: %d", a));
         String sourceName = sourceList[a]; 
         String sourceID = energyManager.getEnergySourceIDByName(sourceName);
+        
         logger.info(String.format("Fan ID: " + fanDev.getDeviceId()));       
         try {
         	deviceManager.getDeviceByID(fanDev.getDeviceId()).setEnergySourceID(sourceID);
-        	deviceManager.turnOnDevice(fanDev, false);
-        	onFanButton.setBackground(Color.GREEN);
-        	offFanButton.setBackground(null);
-            startFan = Instant.now();
+        	if(energyManager.getEnergySourceByID(sourceID).getAvailableEnergy() > 0) {
+        		deviceManager.turnOnDevice(fanDev, false);
+            	onFanButton.setBackground(Color.GREEN);
+            	offFanButton.setBackground(null);
+                startFan = Instant.now();
+        	}
+        	else {
+        		offFanButton.setBackground(Color.GREEN);
+            	onFanButton.setBackground(null);
+        		setWarningMsg("Energy source does not have sufficient energy");
+        	}
         } catch(IllegalArgumentException e) {
         	setWarningMsg(e.getMessage());
         }
@@ -547,7 +558,8 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     }//GEN-LAST:event_onFanButtonActionPerformed
 
     private void offFanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_offFanButtonActionPerformed
-        // TODO add your handling code here:
+    	// TODO add your handling code here:
+    	long checkDiffStartPoint = 0;
     	if(fanDev.isOn()) {
     		deviceManager.turnOffDevice(fanDev);
     		offFanButton.setBackground(Color.GREEN);
@@ -555,11 +567,36 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         	stopFan = Instant.now();
         	Duration timeElapsed = Duration.between(startFan, stopFan);
         	timeTakenForFan += (timeElapsed.toMillis())/1000;
+        	oldStartFan = startFan;
         	labelFanRate.setText("Fan: " + timeTakenForFan + " s");
         	labelFanConsum.setText("Fan: " + round(fanDev.getConsumedEnergy(),2) + " kWh");
     	}
     	else {
-    		setWarningMsg("Fan is already off");
+    		if(startFan != null) {
+	    		offFanButton.setBackground(Color.GREEN);
+	        	onFanButton.setBackground(null);
+	        	Duration startElapsed = Duration.between(startFan, oldStartFan);
+    	    	checkDiffStartPoint = (startElapsed.toMillis())/1000;
+	        	if(checkDiffStartPoint != 0) {
+		        	stopFan = Instant.now();
+		        	Duration timeElapsed = Duration.between(startFan, stopFan);
+		        	timeTakenForFan += (timeElapsed.toMillis())/1000;
+		        	oldStartFan = startFan;
+		        	labelFanRate.setText("Fan: " + timeTakenForFan + " s");
+	        	}
+	        	else {
+	        		labelFanRate.setText("Fan: " + timeTakenForFan + " s");
+	        	}
+	        	labelFanConsum.setText("Fan: " + round(fanDev.getConsumedEnergy(),2) + " kWh");
+	    		setWarningMsg("Fan is already off");
+    		}
+    		else {
+    			offFanButton.setBackground(Color.GREEN);
+	        	onFanButton.setBackground(null);
+	        	labelFanRate.setText("Fan: " + timeTakenForFan + " s");
+	        	labelFanConsum.setText("Fan: " + round(fanDev.getConsumedEnergy(),2) + " kWh");
+	    		setWarningMsg("Fan is already off");
+    		}
     	}
     	
     }//GEN-LAST:event_offFanButtonActionPerformed
@@ -571,11 +608,12 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         String sourceName = sourceList[a]; 
         String sourceID = energyManager.getEnergySourceIDByName(sourceName);
         try {
-            deviceManager.getDeviceByID(heaterDev.getDeviceId()).setEnergySourceID(sourceID);        
+            deviceManager.getDeviceByID(heaterDev.getDeviceId()).setEnergySourceID(sourceID);
             deviceManager.turnOnDevice(heaterDev, false);
             onHeaterButton.setBackground(Color.GREEN);
         	offHeaterButton.setBackground(null);
             startHeater = Instant.now();
+            
         } catch(IllegalArgumentException e) {	
         	setWarningMsg(e.getMessage());
         }     
@@ -583,17 +621,44 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 
     private void offHeaterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_offHeaterButtonActionPerformed
         // TODO add your handling code here:
+    	long checkDiffStartPoint = 0;
     	if(heaterDev.isOn()) {
-	    	deviceManager.turnOffDevice(heaterDev);
+    		deviceManager.turnOffDevice(heaterDev);
 	    	offHeaterButton.setBackground(Color.GREEN);
         	onHeaterButton.setBackground(null);
 	    	stopHeater = Instant.now();
 	    	Duration timeElapsed = Duration.between(startHeater, stopHeater);
 	    	timeTakenForHeater += (timeElapsed.toMillis())/1000;
-	    	labelHeaterRate.setText("Heater: " + timeTakenForHeater + " s");
+        	oldStartHeater = startHeater;
+        	labelHeaterRate.setText("Heater: " + timeTakenForHeater + " s");
 	    	labelHeaterConsum.setText("Heater: " + round(heaterDev.getConsumedEnergy(),2) + " kWh");
     	}
     	else {
+    		if(startHeater != null) {
+	    		offHeaterButton.setBackground(Color.GREEN);
+	        	onHeaterButton.setBackground(null);
+	        	Duration startElapsed = Duration.between(startHeater, oldStartHeater);
+    	    	checkDiffStartPoint = (startElapsed.toMillis())/1000;
+	        	if(checkDiffStartPoint != 0) {
+		        	stopHeater = Instant.now();
+		        	Duration timeElapsed = Duration.between(startHeater, stopHeater);
+		        	timeTakenForHeater += (timeElapsed.toMillis())/1000;
+		        	oldStartHeater = startHeater;
+		        	labelHeaterRate.setText("Heater: " + timeTakenForHeater + " s");
+	        	}
+	        	else {
+	        		labelHeaterRate.setText("Heater: " + timeTakenForHeater + " s");
+	        	}
+	        	labelHeaterConsum.setText("Heater: " + round(heaterDev.getConsumedEnergy(),2) + " kWh");
+	    		setWarningMsg("Heater is already off");
+    		}
+    		else {
+    			offHeaterButton.setBackground(Color.GREEN);
+	        	onHeaterButton.setBackground(null);
+	        	labelHeaterRate.setText("Heater: " + timeTakenForHeater + " s");
+	        	labelHeaterConsum.setText("Heater: " + round(heaterDev.getConsumedEnergy(),2) + " kWh");
+	    		setWarningMsg("Heater is already off");
+    		}
     		setWarningMsg("Heater is already off");
     	}
     }//GEN-LAST:event_offHeaterButtonActionPerformed
@@ -606,10 +671,18 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         String sourceID = energyManager.getEnergySourceIDByName(sourceName);
         try {
             deviceManager.getDeviceByID(coolerDev.getDeviceId()).setEnergySourceID(sourceID);
-        	deviceManager.turnOnDevice(coolerDev, false);
-        	onLightButton.setBackground(Color.GREEN);
-        	offLightButton.setBackground(null);
-            startCooler = Instant.now();
+            if(energyManager.getEnergySourceByID(sourceID).getAvailableEnergy() > 0) {
+            	deviceManager.turnOnDevice(coolerDev, false);
+            	onLightButton.setBackground(Color.GREEN);
+            	offLightButton.setBackground(null);
+                startCooler = Instant.now();
+        	}
+        	else {
+        		offLightButton.setBackground(Color.GREEN);
+        		onLightButton.setBackground(null);
+        		setWarningMsg("Energy source does not have sufficient energy");
+        	}
+        	
         } catch(IllegalArgumentException e) {	
         	setWarningMsg(e.getMessage());
         }                
@@ -618,17 +691,44 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 
     private void offLightButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_offLightButtonActionPerformed
         // TODO add your handling code here:
+    	long checkDiffStartPoint = 0;
     	if(coolerDev.isOn()) {
-	    	deviceManager.turnOffDevice(coolerDev);
+    		deviceManager.turnOffDevice(coolerDev);
 	    	offLightButton.setBackground(Color.GREEN);
         	onLightButton.setBackground(null);
 	    	stopCooler = Instant.now();
 	    	Duration timeElapsed = Duration.between(startCooler, stopCooler);
 	    	timeTakenForCooler += (timeElapsed.toMillis())/1000;
-	    	labelLightRate.setText("Cooler: " + timeTakenForCooler + " s");
+        	oldStartCooler = startCooler;
+        	labelLightRate.setText("Cooler: " + timeTakenForCooler + " s");
 	    	labelLightConsum.setText("Cooler: " + round(coolerDev.getConsumedEnergy(),2) + " kWh");
     	}
     	else {
+    		if(startCooler != null) {
+	    		offLightButton.setBackground(Color.GREEN);
+	        	onLightButton.setBackground(null);
+	        	Duration startElapsed = Duration.between(startCooler, oldStartCooler);
+    	    	checkDiffStartPoint = (startElapsed.toMillis())/1000;
+	        	if(checkDiffStartPoint != 0) {
+		        	stopCooler = Instant.now();
+		        	Duration timeElapsed = Duration.between(startCooler, stopCooler);
+		        	timeTakenForCooler += (timeElapsed.toMillis())/1000;
+		        	oldStartCooler = startCooler;
+		        	labelLightRate.setText("Cooler: " + timeTakenForCooler + " s");
+	        	}
+	        	else {
+	        		labelLightRate.setText("Cooler: " + timeTakenForCooler + " s");
+	        	}
+	        	labelLightConsum.setText("Cooler: " + round(coolerDev.getConsumedEnergy(),2) + " kWh");
+	    		setWarningMsg("Cooler is already off");
+    		}
+    		else {
+    			offLightButton.setBackground(Color.GREEN);
+	        	onLightButton.setBackground(null);
+	        	labelLightRate.setText("Cooler: " + timeTakenForCooler + " s");
+	        	labelLightConsum.setText("Cooler: " + round(coolerDev.getConsumedEnergy(),2) + " kWh");
+	    		setWarningMsg("Cooler is already off");
+    		}
     		setWarningMsg("Cooler is already off");
     	}
     }//GEN-LAST:event_offLightButtonActionPerformed
