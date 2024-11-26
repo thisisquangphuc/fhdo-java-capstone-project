@@ -200,7 +200,6 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() throws IOException {
 
-        jPanel1 = new javax.swing.JPanel();
         
         energyButton = new javax.swing.JButton();
         devicesButton = new javax.swing.JButton();
@@ -226,52 +225,12 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         labelLightRate = new javax.swing.JLabel();
         labelHeaterConsum = new javax.swing.JLabel();
         labelLightConsum = new javax.swing.JLabel();
-//        jPanel3 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Smart Hause");
         setSize(new java.awt.Dimension(100, 100));
 
-        jPanel1.setBackground(new java.awt.Color(51, 255, 255));
 
-        energyButton.setText("Energy Source Management");
-        energyButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                energyButtonActionPerformed(evt);
-            }
-        });
-
-        devicesButton.setText("Devices Management");
-        devicesButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                devicesButtonActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(energyButton, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(27, 27, 27)
-                        .addComponent(devicesButton)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(devicesButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(70, 70, 70)
-                .addComponent(energyButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(207, 207, 207))
-        );
 
         jTabbedPane.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
 
@@ -483,20 +442,7 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
                 .addGap(64, 64, 64))
         );
         
-        //this.deviceManagementUI = new DeviceManagementUI();
-//        deviceManagementUI = new DeviceManagementUI();
         jTabbedPane.addTab("Devices Management", jPanel2);
-
-//        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-//        jPanel3.setLayout(jPanel3Layout);
-//        jPanel3Layout.setHorizontalGroup(
-//            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//            .addGap(0, 760, Short.MAX_VALUE)
-//        );
-//        jPanel3Layout.setVerticalGroup(
-//            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//            .addGap(0, 491, Short.MAX_VALUE)
-//        );
         
         this.energySourceMgmtPanel = new EnergySourceManagementUI(this.energyManager, this.deviceManager);
 
@@ -507,28 +453,16 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
                 .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void energyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_energyButtonActionPerformed
-        // TODO add your handling code here:
-//    	jTabbedPane.setSelectedIndex(1);
-    }//GEN-LAST:event_energyButtonActionPerformed
-
-    private void devicesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_devicesButtonActionPerformed
-        // TODO add your handling code here:
-//    	jTabbedPane.setSelectedIndex(0);
-    }//GEN-LAST:event_devicesButtonActionPerformed
 
     private void onFanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onFanButtonActionPerformed
     	// TODO add your handling code here:
@@ -659,7 +593,6 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 	        	labelHeaterConsum.setText("Heater: " + round(heaterDev.getConsumedEnergy(),2) + " kWh");
 	    		setWarningMsg("Heater is already off");
     		}
-    		setWarningMsg("Heater is already off");
     	}
     }//GEN-LAST:event_offHeaterButtonActionPerformed
 
@@ -729,56 +662,13 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 	        	labelLightConsum.setText("Cooler: " + round(coolerDev.getConsumedEnergy(),2) + " kWh");
 	    		setWarningMsg("Cooler is already off");
     		}
-    		setWarningMsg("Cooler is already off");
     	}
     }//GEN-LAST:event_offLightButtonActionPerformed
 
     /**
      * @param args the command line arguments
      */
-//     public static void main(String args[]) {
-//         /* Set the Nimbus look and feel */
-//         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-//          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-//          */
-    	
-    	
-//         try {
-//             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                 if ("Nimbus".equals(info.getName())) {
-//                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                     break;
-//                 }
-//             }
-//         } catch (ClassNotFoundException ex) {
-//             java.util.logging.Logger.getLogger(UIManagingSmartObjects.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//         } catch (InstantiationException ex) {
-//             java.util.logging.Logger.getLogger(UIManagingSmartObjects.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//         } catch (IllegalAccessException ex) {
-//             java.util.logging.Logger.getLogger(UIManagingSmartObjects.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//             java.util.logging.Logger.getLogger(UIManagingSmartObjects.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//         }
-//         //</editor-fold>
 
-//         /* Create and display the form */
-//         java.awt.EventQueue.invokeLater(new Runnable() {
-//             public void run() {
-//                 try {
-//                 	UIManagingSmartObjects UI = new UIManagingSmartObjects();
-//                     UI.setVisible(true);
-//                     //======================================================
-              
-// //                    UI.fanSource.setModel(new javax.swing.DefaultComboBoxModel<>(sourceList));
-// //                    UI.heaterSource.setModel(new javax.swing.DefaultComboBoxModel<>(sourceList));
-// //                    UI.lightSource.setModel(new javax.swing.DefaultComboBoxModel<>(sourceList));
-//                 } catch (IOException ex) {
-//                     Logger.getLogger(UIManagingSmartObjects.class.getName()).log(Level.SEVERE, null, ex);
-//                 }
-//             }
-//         });
-//     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton devicesButton;
@@ -789,7 +679,7 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> heaterSource;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JPanel jPanel1;
+//    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private EnergySourceManagementUI energySourceMgmtPanel;
 //    private javax.swing.JPanel jPanel3;
