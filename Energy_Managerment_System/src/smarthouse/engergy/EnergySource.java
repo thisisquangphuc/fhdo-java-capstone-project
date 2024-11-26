@@ -160,7 +160,7 @@ public class EnergySource {
         }
     }
 
-    private boolean isInRechargeTimeRange() {
+    public boolean isInRechargeTimeRange() {
         LocalTime now = LocalTime.now();
         return now.isAfter(LocalTime.of(charging_start_time, 0)) && now.isBefore(LocalTime.of(charging_end_time, 0));
     }
