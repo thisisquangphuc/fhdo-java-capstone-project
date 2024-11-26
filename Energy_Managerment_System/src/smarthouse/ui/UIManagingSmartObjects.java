@@ -41,7 +41,6 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 	
 	private List<String> sourceNames;
 	private String[] sourceList;
-	private String fanDeviceName = "Fan 1";
 	private SmartDevice fanDev = new SmartDevice("Living Room Fan", SmartDevice.EnergyType.DC);
 	private SmartDevice coolerDev = new SmartDevice("Bedroom Cooler", SmartDevice.EnergyType.DC);
 	private SmartDevice heaterDev = new SmartDevice("Living Room Heater", SmartDevice.EnergyType.AC);
@@ -61,14 +60,9 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     /**
      * Creates new form UIManagingSmartObjects
      */
-    public UIManagingSmartObjects() throws IOException {
-//    	this.energyManager = energyManager;
+    public UIManagingSmartObjects(EnergyManager energyManager) throws IOException {
+    	this.energyManager = energyManager;
 //    	this.deviceManager = deviceManager;
-//    	logger.info("----------------------------");
-//    	List<String> deviceNames = deviceManager.getAllDevicesNames();
-//		for (String name : deviceNames) {
-//			logger.info(name);
-//		}
     	emsInit();
         initComponents();
         scaleImage();
@@ -161,25 +155,7 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 //        background.setIcon(iconScaleBackground);
         
     }
-    private void emsInit() {
-    	// define DATA 
-    	energyManager = EnergyManager.getInstance();
-    	
-    	// Create Engery Sources
-		Battery battery1 = new Battery(100, 70);
-		EnergySource powerBank = new EnergySource("Power Bank", EnergySource.EnergyType.BATTERY, battery1);
-
-		Battery battery2 = new Battery(1000, 1);
-		EnergySource solar = new EnergySource("Home Solar", EnergySource.EnergyType.SOLAR, battery2);
-
-		EnergySource grid = new EnergySource("Grid Power", EnergySource.EnergyType.GRID);
-		
-		// Add energy sources to the EnergyManager
-		energyManager.addEnergySource(powerBank);
-		energyManager.addEnergySource(solar);
-		energyManager.addEnergySource(grid);
-    	
-    	
+    private void emsInit() {   	
     	//device manager
     	deviceManager = new DeviceManager();
     	deviceManager.addDevice(fanDev);
@@ -189,9 +165,7 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     	
     	sourceNames = energyManager.getEnergySourceNames();
     	 
-        sourceList = sourceNames.toArray(new String[sourceNames.size()]);
-    	
-    	
+        sourceList = sourceNames.toArray(new String[sourceNames.size()]); 	
     	
     }
     
@@ -621,8 +595,8 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     private void offLightButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_offLightButtonActionPerformed
         // TODO add your handling code here:
     	deviceManager.turnOffDevice(coolerDev);
-    	Instant endCooler = Instant.now();
-    	Duration timeElapsed = Duration.between(startCooler, endCooler);
+    	stopCooler = Instant.now();
+    	Duration timeElapsed = Duration.between(startCooler, stopCooler);
     	timeTakenForCooler += (timeElapsed.toMillis())/1000;
     	labelLightRate.setText("Cooler: " + timeTakenForCooler + " s");
     	labelLightConsum.setText("Cooler: " + round(coolerDev.getConsumedEnergy(),2) + " kWh");

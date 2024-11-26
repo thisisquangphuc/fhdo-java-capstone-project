@@ -40,33 +40,33 @@ public class Main {
 
 		try {
 			
-//			/* Initialize data */ 
-//
-//			/* Initialize EnergyManager */
-//			EnergyManager energyManager = EnergyManager.getInstance();
-//	
-//			// Create Engery Sources
-//			Battery battery1 = new Battery(100, 70);
-//			EnergySource powerBank = new EnergySource("Power Bank", EnergySource.EnergyType.BATTERY, battery1);
-//	
-//			Battery battery2 = new Battery(1000, 1);
-//			EnergySource solar = new EnergySource("Home Solar", EnergySource.EnergyType.SOLAR, battery2);
-//	
-//			EnergySource grid = new EnergySource("Grid Power", EnergySource.EnergyType.GRID);
-//			
-//			// Add energy sources to the EnergyManager
-//			energyManager.addEnergySource(powerBank);
-//			energyManager.addEnergySource(solar);
-//			energyManager.addEnergySource(grid);
-//			
-//			// Print all energy sources ID
-//			List<String> energySourceIDs = energyManager.getEnergySourceIDs();
-//			for (String id : energySourceIDs) {
-//				System.out.println(id);
-//				//get name of the energy source
-//				EnergySource energySource = energyManager.getEnergySourceByID(id);
-//				System.out.println(energySource.getSourceName());
-//			}
+			/* Initialize data */ 
+
+			/* Initialize EnergyManager */
+			EnergyManager energyManager = EnergyManager.getInstance();
+	
+			// Create Engery Sources
+			Battery battery1 = new Battery(100, 70);
+			EnergySource powerBank = new EnergySource("Power Bank", EnergySource.EnergyType.BATTERY, battery1);
+	
+			Battery battery2 = new Battery(1000, 1);
+			EnergySource solar = new EnergySource("Home Solar", EnergySource.EnergyType.SOLAR, battery2);
+	
+			EnergySource grid = new EnergySource("Grid Power", EnergySource.EnergyType.GRID);
+			
+			// Add energy sources to the EnergyManager
+			energyManager.addEnergySource(powerBank);
+			energyManager.addEnergySource(solar);
+			energyManager.addEnergySource(grid);
+			
+			// Print all energy sources ID
+			List<String> energySourceIDs = energyManager.getEnergySourceIDs();
+			for (String id : energySourceIDs) {
+				System.out.println(id);
+				//get name of the energy source
+				EnergySource energySource = energyManager.getEnergySourceByID(id);
+				System.out.println(energySource.getSourceName());
+			}
 //			/* Device Manager */
 //			DeviceManager deviceManager = new DeviceManager();
 //	
@@ -120,7 +120,7 @@ public class Main {
 //				logger.info(device.getStatus());
 //			}
 
-			new UIManagingSmartObjects().setVisible(true);
+			new UIManagingSmartObjects(energyManager).setVisible(true);
 			/* Turn on devices though the DeviceManager */
 			// deviceManager.turnOnDevice(heater);
 			// deviceManager.turnOnDevice(fan);
