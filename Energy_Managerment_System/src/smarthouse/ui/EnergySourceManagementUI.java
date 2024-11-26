@@ -43,6 +43,7 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
     private void initComponents() {
     	List<String> sourceNames = this.energyManager.getEnergySourceNames();
     	List<String> energySourceIDs = this.energyManager.getEnergySourceIDs();
+    	List<String> deviceIDList = this.deviceManager.getAllDevicesIDs();
 
         this.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         this.setMaximumSize(new java.awt.Dimension(1500, 1000));
@@ -54,6 +55,10 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
         
 	        // After creating and setting properties for panel's components, add panel to EnergySourceManagement UI
         	this.add(energySourcePanel.get(energySourceIDs.get(i)));
+    	}
+    	
+    	for (int i=0; i<deviceIDList.size(); i++) {
+    		curDeviceConsumedAmount.put(deviceIDList.get(i), 0.0);
     	}
     	
     	//
@@ -225,7 +230,7 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
      * @param energySource
      * @return energyConnsumed (Double)
      */
-    private synchronized double getBatteryEnergyConsumed(JSONObject batteryStatus) {
+    private double getBatteryEnergyConsumed(JSONObject batteryStatus) {
     	if (!batteryStatus.isEmpty()) {    	
 	    	String batteryCapacity = batteryStatus.getString("capacity");
 	    	// logger.fine(String.format("[getBatteryEnergyConsumed()] battery capacity %s", batteryCapacity));
@@ -238,26 +243,6 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
     	} else {
     		throw new IllegalArgumentException("Invalid input! BatteryStatus should must not be null.");
     	}
-    }
-    
-    
-    private Double updateCurrentEnergyConsumed(JSONObject batteryStatus, String energySourceID) {
-    	Double initAmountLeft = energyConsumedAmount.get(energySourceID);
-    	Double totalEnergyConsumed = 0.0;
-    	
-    	List<String> deviceIDList = this.deviceManager.getAllDevicesIDs();
-    	
-    	for (int i=0; i<deviceIDList.size(); i++) {
-    		SmartDevice device = this.deviceManager.getDeviceByID(deviceIDList.get(i));
-    		
-    		if (device.getEnergySourceID() != null) {  
-    			if (device.getEnergySourceID().equals(energySourceID)) {
-    				totalEnergyConsumed += device.getConsumedEnergy();
-    			}
-    		}
-    	}
-    	
-    	return initAmountLeft + totalEnergyConsumed;
     }
     
     
@@ -316,6 +301,35 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
     	}
     	return deviceListStr;
     }
+       
+    /**
+     * 
+     * @param batteryStatus
+     * @param energySourceID
+     * @return
+     */
+    private Double updateCurrentEnergyConsumed(JSONObject batteryStatus, String energySourceID) {
+    	Double totalEnergyConsumed = energyConsumedAmount.get(energySourceID);
+    	
+    	List<String> deviceIDList = this.deviceManager.getAllDevicesIDs();
+    	for (int i=0; i<deviceIDList.size(); i++) {
+    		SmartDevice device = this.deviceManager.getDeviceByID(deviceIDList.get(i));
+    		
+    		if (device.getEnergySourceID() != null) {  
+    			if (device.getEnergySourceID().equals(energySourceID)) {
+    				String deviceID = deviceIDList.get(i);
+    	    		Double prevAmount = curDeviceConsumedAmount.get(deviceID);
+    	    		Double curAmount = this.deviceManager.getDeviceByID(deviceID).getConsumedEnergy();
+    	    		
+    				totalEnergyConsumed += curAmount - prevAmount;
+    				curDeviceConsumedAmount.put(deviceID, curAmount);
+    			}
+    		}
+    	}
+    	energyConsumedAmount.put(energySourceID, totalEnergyConsumed);
+    	return totalEnergyConsumed;
+    }
+    
     
     /**
      *  Button event for charging battery/panel
@@ -332,8 +346,7 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
     	
     	logger.fine(String.format("[ChargeButtonPressed] %s Charging Status change from %s to other status.", energySource.getSourceName(), isRecharging));
     	this.energyManager.manageRecharging(energySourceID, !isRecharging);
-    	
-    	
+    	   	
         // 
     	if (!energySource.isInRechargeTimeRange()) {
     		JOptionPane.showMessageDialog(this,
@@ -631,5 +644,6 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
     private Map<String, javax.swing.JLabel> 		deviceComsumingSource 	= new HashMap<>();
     private Map<String, javax.swing.JButton> 		chargeSourceBtn 		= new HashMap<>();
     private Map<String, javax.swing.JButton> 		removeSourceBtn 		= new HashMap<>();
-    private Map<String, Double> 					energyConsumedAmount	= new HashMap<>();	
+    private Map<String, Double> 					energyConsumedAmount	= new HashMap<>();
+    private Map<String, Double> 					curDeviceConsumedAmount	= new HashMap<>();
 }
