@@ -63,7 +63,7 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
 	    	// Create timer to get and refresh data/info on UI periodically
 	        ActionListener displayUITask = new ActionListener() {
 	            public void actionPerformed(ActionEvent evt) {
-	            	logger.fine("Refresh UI data");
+	            	// logger.fine("Refresh UI data");
 	            	updateEnergySourceUI();
 	            }
 	        };
@@ -216,8 +216,8 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
     		// [TODO] Handle error here
     		
     	}
-    	logger.fine(String.format("[getBatteryStatus()] %s BatteryStatus: %s", 
-    			energySource.getSourceName(), batteryStatus.toString()));
+    	// logger.fine(String.format("[getBatteryStatus()] %s BatteryStatus: %s", 
+    	// 		energySource.getSourceName(), batteryStatus.toString()));
     	return jsonStatusString;
     }
     
@@ -229,10 +229,10 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
     private synchronized double getBatteryEnergyConsumed(JSONObject batteryStatus) {
     	if (!batteryStatus.isEmpty()) {    	
 	    	String batteryCapacity = batteryStatus.getString("capacity");
-	    	logger.fine(String.format("[getBatteryEnergyConsumed()] battery capacity %s", batteryCapacity));
+	    	// logger.fine(String.format("[getBatteryEnergyConsumed()] battery capacity %s", batteryCapacity));
 	    	
 	    	String energyLevel = batteryStatus.getString("energy_level_kWh");
-	    	logger.fine(String.format("[getBatteryEnergyConsumed()] energy_level_kWh %s", energyLevel));
+	    	// logger.fine(String.format("[getBatteryEnergyConsumed()] energy_level_kWh %s", energyLevel));
 	    			
 	    	double energyConsumed = Double.parseDouble(batteryCapacity)	- Double.parseDouble(energyLevel);	
 	    	return energyConsumed; 
@@ -250,10 +250,10 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
     private synchronized double getBatteryPercentage(JSONObject batteryStatus) {
     	if (!batteryStatus.isEmpty()) {    	
 	    	String energyLevel = batteryStatus.getString("energy_level_kWh");
-	    	logger.fine(String.format("[getBatteryPercentage()] energy_level_kWh %s", energyLevel));
+	    	// logger.fine(String.format("[getBatteryPercentage()] energy_level_kWh %s", energyLevel));
 	    	
 	    	double batteryPercentage = Double.parseDouble(batteryStatus.getString("percentage"));
-	    	logger.fine(String.format("[getBatteryPercentage()] battery percentage %.3f", batteryPercentage));
+	    	// logger.fine(String.format("[getBatteryPercentage()] battery percentage %.3f", batteryPercentage));
 	    	
 	    	// If energy level fewer than 1% percent, return/display 1% 
 	    	return ((Double.parseDouble(energyLevel)>0) && (batteryPercentage==0)) ? 1: batteryPercentage;
