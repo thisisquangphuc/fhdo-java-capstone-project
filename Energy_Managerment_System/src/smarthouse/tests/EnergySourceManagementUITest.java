@@ -79,15 +79,22 @@ class EnergySourceManagementUITest {
 		
 		List<String> energySourceIDs = this.energyManager.getEnergySourceIDs();
 		for (int i=0; i<energySourceIDs.size(); i++) { 
-			energySourceManagementUI.getChargeSourceBtn().get(energySourceIDs.get(i)).doClick();
-			JSONObject jsonStatus = new JSONObject(this.energyManager.getEnergySourceByID(energySourceIDs.get(i)).getStatus());
-			Boolean status = Boolean.parseBoolean(jsonStatus.getString("isRecharging"));
-			assertTrue(status, "Status should be recharging after pressing charge button.");
-			
-			energySourceManagementUI.getChargeSourceBtn().get(energySourceIDs.get(i)).doClick();
-			jsonStatus = new JSONObject(this.energyManager.getEnergySourceByID(energySourceIDs.get(i)).getStatus());
-			status = Boolean.parseBoolean(jsonStatus.getString("isRecharging"));
-			assertFalse(status, "Status should not be recharging after pressing again charge button to stop charging.");
+			if (this.energyManager.getEnergySourceByID(energySourceIDs.get(i)).isInRechargeTimeRange()) {
+				energySourceManagementUI.getChargeSourceBtn().get(energySourceIDs.get(i)).doClick();
+				JSONObject jsonStatus = new JSONObject(this.energyManager.getEnergySourceByID(energySourceIDs.get(i)).getStatus());
+				Boolean status = Boolean.parseBoolean(jsonStatus.getString("isRecharging"));
+				assertTrue(status, "Status should be recharging after pressing charge button.");
+				
+				energySourceManagementUI.getChargeSourceBtn().get(energySourceIDs.get(i)).doClick();
+				jsonStatus = new JSONObject(this.energyManager.getEnergySourceByID(energySourceIDs.get(i)).getStatus());
+				status = Boolean.parseBoolean(jsonStatus.getString("isRecharging"));
+				assertFalse(status, "Status should not be recharging after pressing again charge button to stop charging.");
+			} else {
+				energySourceManagementUI.getChargeSourceBtn().get(energySourceIDs.get(i)).doClick();
+				JSONObject jsonStatus = new JSONObject(this.energyManager.getEnergySourceByID(energySourceIDs.get(i)).getStatus());
+				Boolean status = Boolean.parseBoolean(jsonStatus.getString("isRecharging"));
+				assertFalse(status, "Status should not be recharging when out of recharging time.");
+			}
 		}
 	}
 	

@@ -75,7 +75,7 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
     
     
     /**
-     *  Update UI when data/info change
+     *  Update UI periodically for any changes of data/info
      */
     public synchronized void updateEnergySourceUI() {
     	List<String> sourceNames = this.energyManager.getEnergySourceNames();
@@ -188,9 +188,9 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
     
     
     /**
-     * 
+     * Get battery status of one energy source
      * @param energySource
-     * @return
+     * @return batteryStatus (JSONOBject)
      */
     private JSONObject getBatteryStatus(EnergySource energySource) {
     	JSONObject jsonStatusString = new JSONObject(); 
@@ -213,8 +213,7 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
 	    	jsonStatusString.put("energy_level_kWh", 	energyLevel);
 	    	jsonStatusString.put("percentage", 			levelPercentage);
     	} else {
-    		// [TODO] Handle error here
-    		
+    		// [TODO] 
     	}
     	// logger.fine(String.format("[getBatteryStatus()] %s BatteryStatus: %s", 
     	// 		energySource.getSourceName(), batteryStatus.toString()));
@@ -222,9 +221,9 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
     }
     
     /**
-     * 
+     * Extract battery energy consumed amount from battery status 
      * @param energySource
-     * @return
+     * @return energyConnsumed (Double)
      */
     private synchronized double getBatteryEnergyConsumed(JSONObject batteryStatus) {
     	if (!batteryStatus.isEmpty()) {    	
@@ -237,15 +236,14 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
 	    	double energyConsumed = Double.parseDouble(batteryCapacity)	- Double.parseDouble(energyLevel);	
 	    	return energyConsumed; 
     	} else {
-    		// [TODO] Handle error here
-    		return -1;
+    		throw new IllegalArgumentException("Invalid input! BatteryStatus should must not be null.");
     	}
     }
     
     /**
-     * 
+     * Extract battery percentage from battery status
      * @param energySource
-     * @return
+     * @return batteryPercentage (Double)
      */
     private synchronized double getBatteryPercentage(JSONObject batteryStatus) {
     	if (!batteryStatus.isEmpty()) {    	
@@ -258,15 +256,14 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
 	    	// If energy level fewer than 1% percent, return/display 1% 
 	    	return ((Double.parseDouble(energyLevel)>0) && (batteryPercentage==0)) ? 1: batteryPercentage;
     	} else {
-    		// [TODO] Handle error here 
-    		return -1;
+    		throw new IllegalArgumentException("Invalid input! BatteryStatus should must not be null.");
     	}
     }
      
     /**
-     * 
+     * Check if energy source has battery or not
      * @param energySource
-     * @return
+     * @return (Boolean)
      */
     private Boolean isEnergySourceHasBattery(EnergySource energySource) {
     	JSONObject jsonStatusString = new JSONObject(energySource.getStatus());
@@ -278,7 +275,7 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
     /**
      * 
      * @param energySource
-     * @return
+     * @return 
      */
     private String getDeviceComsumingStr(EnergySource energySource) {
     	List<String> deviceIDList = this.deviceManager.getAllDevicesIDs();
@@ -286,14 +283,15 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
     	
     	for (int i=0; i<deviceIDList.size(); i++) {
     		SmartDevice device = this.deviceManager.getDeviceByID(deviceIDList.get(i));
-    		if(device.getEnergySourceID() != null) {
-				if (device.getEnergySourceID().equals(energySource.getSourceID())) {
-					String deviceInfo = String.format("%s \t is %s", 
-							device.getDeviceName(), 
-							(device.isOn() ? "ON" : "OFF"));
-					deviceListStr = deviceListStr + "<br/>" + deviceInfo;
-				}
-			}
+    		
+    		if (device.getEnergySourceID() != null) {    		
+	    		if (device.getEnergySourceID().equals(energySource.getSourceID())) {
+	        		String deviceInfo = String.format("%s \t is %s", 
+	    					device.getDeviceName(), 
+	    					(device.isOn() ? "ON" : "OFF"));
+	    			deviceListStr = deviceListStr + "<br/>" + deviceInfo;
+	    		}
+    		}
     	}
     	return deviceListStr;
     }
@@ -305,7 +303,11 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
      */
     private synchronized void chargeSourceBtnActionPerformed(java.awt.event.ActionEvent evt, String energySourceID) {                                              
         // TODO add your handling code here:
-    	logger.fine(String.format("Charge Button pressed %s", energySourceID));
+//    	logger.fine(String.format("Charge Button pressed %s", energySourceID));
+    	
+//        // Code To popup an ERROR_MESSAGE Dialog.
+//        JOptionPane.showMessageDialog(this, "Enter a valid Number", 
+//                               "ERROR", JOptionPane.ERROR_MESSAGE);
     	
     	EnergySource energySource = this.energyManager.getEnergySourceByID(energySourceID);
     	JSONObject jsonStatusString = new JSONObject(energySource.getStatus());
