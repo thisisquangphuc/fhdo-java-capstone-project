@@ -302,7 +302,7 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
      * @param evt
      * @param energySourceID
      */
-    public synchronized void chargeSourceBtnActionPerformed(java.awt.event.ActionEvent evt, String energySourceID) {                                              
+    private synchronized void chargeSourceBtnActionPerformed(java.awt.event.ActionEvent evt, String energySourceID) {                                              
         // TODO add your handling code here:
     	logger.fine(String.format("Charge Button pressed %s", energySourceID));
     	
@@ -320,7 +320,7 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
      * @param evt
      * @param sourceID
      */
-    public synchronized void removeSourceBtnActionPerformed(java.awt.event.ActionEvent evt, String sourceID) {                                               
+    private synchronized void removeSourceBtnActionPerformed(java.awt.event.ActionEvent evt, String sourceID) {                                               
         // TODO add your handling code here: 	
     	logger.fine(String.format("Remove Source %d", 
     			energyManager.getEnergySourceIDs().indexOf(sourceID)));
