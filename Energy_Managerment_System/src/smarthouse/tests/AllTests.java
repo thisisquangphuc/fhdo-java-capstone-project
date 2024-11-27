@@ -7,7 +7,14 @@ import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 
 @Suite
-@SelectClasses({EnergySourceManagementUITest.class} )
+@SelectClasses({
+	BatteryTest.class,
+	SmartDeviceTest.class,
+	EnergySourceTest.class,
+	DeviceManagerTest.class,
+	EnergyManagerTest.class,
+	UIManagingSmartObjectsTest.class,
+	EnergySourceManagementUITest.class} )
 public class AllTests {
 
 	public static void main(String[] args) {

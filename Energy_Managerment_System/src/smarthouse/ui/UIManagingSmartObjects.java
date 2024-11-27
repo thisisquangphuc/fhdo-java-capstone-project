@@ -34,7 +34,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 public class UIManagingSmartObjects extends javax.swing.JFrame {
-	public static final Logger logger = CustomLogger.getLogger();
+	public static final Logger logger = CustomLogger.getSysLogger();
 //	private DeviceManagementUI deviceManagementUI;
 	// get device and resource manamgerment value
     private EnergyManager energyManager;

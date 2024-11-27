@@ -10,7 +10,7 @@ import smarthouse.log.CustomLogger;
 
 public class DeviceManager {
     //declare logger object
-    private static final Logger logger = CustomLogger.getLogger();
+    private static final Logger logger = CustomLogger.getSysLogger();
 
     private final Map<String, SmartDevice> devices; // Map of deviceID to SmartDevice
 

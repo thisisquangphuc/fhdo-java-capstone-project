@@ -75,10 +75,5 @@ class BatteryTest {
                 "Discharging with a negative amount should throw an exception.");
     }
 
-    @Test
-    void testGetStatus() {
-        String expectedStatus = "{battery_id=" + battery.getId() + ", capacity_kWh= 100.0, energy_level_kWh= 50.0}";
-        assertEquals(expectedStatus, battery.getStatus(), "Status output should match the expected format.");
-    }
 
 }

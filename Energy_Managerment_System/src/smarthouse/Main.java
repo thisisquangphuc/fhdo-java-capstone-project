@@ -18,7 +18,7 @@ import smarthouse.util.ConfigManager;
  * 
  */
 public class Main {
-	public static final Logger logger = CustomLogger.getLogger();
+	public static final Logger logger = CustomLogger.getSysLogger();
 	/**
 	 * @param args
 	 */

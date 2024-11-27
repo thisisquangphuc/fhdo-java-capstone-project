@@ -40,7 +40,7 @@ class SmartDeviceTest {
     @Test
     void testSetEnergySource() {
         
-        EnergySource energySource = new EnergySource("SolarPanel", EnergySource.EnergyType.SOLAR, battery);
+        EnergySource energySource = new EnergySource("Grid", EnergySource.EnergyType.GRID, battery);
         EnergyManager.getInstance().addEnergySource(energySource);
 
         deviceWithoutBattery.setEnergySource(energySource);
