@@ -2,6 +2,7 @@ package smarthouse.devices;
 
 import java.util.Random;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import smarthouse.engergy.Battery;
 import smarthouse.engergy.EnergyManager;
@@ -10,8 +11,9 @@ import smarthouse.log.CustomLogger;
 
 public class SmartDevice implements Runnable {
     // declare logger
-    public static Logger logger = CustomLogger.getLogger();
-    
+    public static Logger logger = CustomLogger.getSysLogger();
+    private final CustomLogger logManager = new CustomLogger();
+
     private String deviceName;
     private final String deviceId;
     private final String energyType;       // AC, DC, or other
@@ -19,7 +21,7 @@ public class SmartDevice implements Runnable {
     private boolean isOn;
     private boolean useIntegratedBattery = false;
     private Thread deviceThread;
-    private double consumedEnergy;
+    private double consumedEnergy=0.0;
     private String energySourceID;          // EnergyManager instance
     private String sourceName;
     private double simulationRate = 1.0;    // Default simulation rate
@@ -34,12 +36,14 @@ public class SmartDevice implements Runnable {
         this.energyType = energyType.name();
         this.battery = battery;
         this.deviceId = UUID.randomUUID().toString();   //Assign a unique ID
+        logManager.log(name,Level.INFO, String.format("Device created with name: %s, energy type: %s, battery: %s", name, energyType, battery));
     }
 
     public SmartDevice(String name, EnergyType energyType) {
         this.deviceName = name;
         this.energyType = energyType.name();
         this.deviceId = UUID.randomUUID().toString();   //Assign a unique ID
+        logManager.log(name,Level.INFO, String.format("Device created with name: %s, energy type: %s", name, energyType));
     }
     
     // Getter for deviceId
@@ -75,6 +79,7 @@ public class SmartDevice implements Runnable {
             throw new IllegalArgumentException("Simulation rate must be between 0 and 1.");
         }
         this.simulationRate = rate;
+        logManager.log(deviceName,Level.INFO, String.format("Simulation rate set to: %s", rate));
     }
 
     public double getSimulationRate() {
@@ -116,6 +121,7 @@ public class SmartDevice implements Runnable {
         this.energySourceID = energySource.getSourceID();
         // get sourceName from id 
         this.sourceName = EnergyManager.getInstance().getEnergySourceByID(energySourceID).getSourceName();
+        logManager.log(deviceName,Level.INFO, String.format("Energy source set to: %s", sourceName));
     }
 
     public String getEnergySourceID() {
@@ -127,6 +133,7 @@ public class SmartDevice implements Runnable {
         this.energySourceID = energySourceID;
         // get sourceName from id 
         this.sourceName = EnergyManager.getInstance().getEnergySourceByID(energySourceID).getSourceName();
+        logManager.log(deviceName,Level.INFO, String.format("Energy source set to: %s", sourceName));
     }
 
     // Set the useIntegratedBattery
@@ -136,6 +143,9 @@ public class SmartDevice implements Runnable {
 
     public void turnOn() {
         if (!isOn) {
+            logManager.log(deviceName,Level.INFO, "Device TURNED ON");
+            // Print status of the device using getStatus()
+            logManager.log(deviceName,Level.INFO, String.format("Device status: %s", getStatus()));
             isOn = true;
             deviceThread = new Thread(this);
             deviceThread.start();
@@ -147,6 +157,8 @@ public class SmartDevice implements Runnable {
             isOn = false;
             this.useIntegratedBattery = false;
             // deviceThread.interrupt();
+            logManager.log(deviceName,Level.INFO, "Device TURNED OFF");
+            logManager.log(deviceName,Level.INFO, String.format("Device status: %s", getStatus()));
         }
     }
 
@@ -168,6 +180,7 @@ public class SmartDevice implements Runnable {
                             turnOff();
                         } else {
                             logger.info(String.format("Device [%s] consumed %.2f kWh from integrated battery", deviceName, randomConsumption));
+                            // logManager.log(deviceName,Level.INFO, String.format("Device [%s] consumed %.2f kWh from integrated battery", deviceName, randomConsumption));
                         }
                     }
                 } else {
@@ -175,6 +188,7 @@ public class SmartDevice implements Runnable {
                     if (success) {
                         consumedEnergy += randomConsumption;
                         logger.info(String.format("Device [%s] consumed %.2f kWh from [%s]", deviceName, randomConsumption, sourceName));
+                        // logManager.log(deviceName,Level.INFO, String.format("Device [%s] consumed %.2f kWh from [%s]", deviceName, randomConsumption, sourceName));
                     } else {
                         turnOff();
                         // logger.warning(String.format("Device %s failed to consume %.2f kWh from %s", deviceName, randomConsumption, sourceName));
@@ -205,7 +219,7 @@ public class SmartDevice implements Runnable {
                 // "\"useIntegratedBattery\":" + useIntegratedBattery + "," +
                 // "\"energySourceID\":\"" + (energySourceID != null ? energySourceID : "None") + "\"," +
                 "\"energySourceName\":\"" + (sourceName != null ? sourceName : "None") + "\"," +
-                "\"consumedEnergy\":" + consumedEnergy + "," +
+                "\"consumedEnergy\":" + String.format("%.2f", consumedEnergy) + "," +
                 "\"simulationRate\":" + simulationRate +
                 "}";
     }

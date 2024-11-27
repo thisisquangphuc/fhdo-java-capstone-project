@@ -17,7 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 public class DeviceManagementUI extends javax.swing.JPanel{
-	public static final Logger logger = CustomLogger.getLogger();
+	public static final Logger logger = CustomLogger.getSysLogger();
 	
 	//define 
 		private EnergyManager energyManager;

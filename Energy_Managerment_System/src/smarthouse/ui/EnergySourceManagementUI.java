@@ -633,7 +633,7 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
 	private EnergyManager energyManager;
 	private DeviceManager deviceManager;
 	private Boolean isTimerOn = true;
-	private static final Logger logger = CustomLogger.getLogger();
+	private static final Logger logger = CustomLogger.getSysLogger();
 
     private Map<String, javax.swing.JPanel> 		energySourcePanel 		= new HashMap<>();
     private Map<String, javax.swing.JLabel> 		energySourceLabel 		= new HashMap<>();

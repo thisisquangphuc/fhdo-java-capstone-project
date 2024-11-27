@@ -2,13 +2,16 @@ package smarthouse.engergy;
 
 import java.time.LocalTime;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import smarthouse.log.CustomLogger;
 import smarthouse.util.ConfigManager;
 
 public class EnergySource {
     //declare logger
-    private static final Logger logger = CustomLogger.getLogger();
+    private static final Logger logger = CustomLogger.getSysLogger();
+    private final CustomLogger logManager = new CustomLogger();
+
 	private final String sourceID;          // Unique identifier for the energy source
     private final String sourceName;        // Name of the energy source
     private final String sourceType;        // Type of energy source (e.g., Solar, Grid, Battery)
@@ -23,8 +26,11 @@ public class EnergySource {
     private Thread rechargeThread;
 
     // Time setting
-    private int charging_start_time = ConfigManager.getInstance().getIntProperty("charging.start_time", 10);
-    private int charging_end_time = ConfigManager.getInstance().getIntProperty("charging.end_time", 17);
+    private int charging_start_time = ConfigManager.getInstance().getInt("charging.start_time", 10);
+    private int charging_end_time = ConfigManager.getInstance().getInt("charging.end_time", 17);
+
+    private int simulationPeriod = ConfigManager.getInstance().getInt("charging.simulation.period", 1);
+    private double simulationAmount = ConfigManager.getInstance().getDouble("charging.simulation.amount", 10);
     // define Enger Type
     public enum EnergyType {
         SOLAR, GRID, BATTERY
@@ -40,6 +46,7 @@ public class EnergySource {
         this.sourceType = sourceType.name();
         this.battery = battery;
         // this.availableEnergy = battery.getEnergyLevel();
+        logManager.log(sourceName,Level.INFO, String.format("Energy source created with name: %s, energy type: %s, battery: %s", sourceName, sourceType, battery.getStatus()));
     }
 
     // Constructor - use for GRID power
@@ -47,6 +54,7 @@ public class EnergySource {
         this.sourceName = sourceName;
         this.sourceType = sourceType.name();
         this.sourceID = UUID.randomUUID().toString();
+        logManager.log(sourceName,Level.INFO, String.format("Energy source created with name: %s, energy type: %s", sourceName, sourceType));
     }
 
     // Getters
@@ -90,13 +98,16 @@ public class EnergySource {
         	boolean result = battery.discharge(amount);
         	if (!result) {
         	    logger.warning(String.format("Battery of [%s] is empty!", sourceName));
-        	}
+        	} else {
+                // logManager.log(sourceName, Level.INFO, String.format("Energy battery has been consumed: %s", amount));
+            }
         	return result;
         }
 
         // For GRID, just record the energy consumption
         if (sourceType.equals(EnergyType.GRID.name())) {
             energyConsumed += amount;
+            // logManager.log(sourceName, Level.INFO, String.format("Energy battery has been consumed: %s", amount));
             return true; // Always succeed for GRID, since it doesn't have a limit
         }
 
@@ -123,10 +134,11 @@ public class EnergySource {
         }
     
         isRecharging = true;
+        logger.info(String.format("Source [%s] is recharging...", sourceName));
         rechargeThread = new Thread(() -> {
             while (isRecharging && isInRechargeTimeRange()) {
                 if (battery != null) {
-                    double amount = 10.0;
+                    double amount = simulationAmount;
                     // Use the Battery's charge method
                     battery.charge(amount); // Recharge by 1 kWh (or any other unit)
                     logger.info(String.format("Battery of source [%s] recharged by %.2f kWh. Current level: %.2f kWh", sourceName, amount, battery.getEnergyLevel()));
@@ -135,13 +147,15 @@ public class EnergySource {
                 }
     
                 try {
-                    Thread.sleep(1000); // Simulate a delay in recharging (1 second)
+                    int sleepTime = 1000 * simulationPeriod;
+                    Thread.sleep(sleepTime); // Simulate a delay in recharging (1 second)
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
+                    return; // Exit the loop if interrupted
                 }
             }
 
-            isRecharging = false;
+            stopRecharging();
 
             if (!isInRechargeTimeRange()) {
                 logger.info(String.format("Recharging thread for %s stopped: OUT OF RECHARGE TIME RANGE", sourceID));
@@ -155,6 +169,7 @@ public class EnergySource {
 
     public synchronized void stopRecharging() {
         isRecharging = false;
+        logger.info(String.format("Source [%s] recharging stopped.", sourceName ));
         if (rechargeThread != null) {
             rechargeThread.interrupt();
         }
@@ -176,11 +191,11 @@ public class EnergySource {
     // Status string
     public synchronized String getStatus() {
         return "{" +
-                "	\"sourceName\":		\"" + sourceName + 		"\"," +
-                "	\"sourceType\":		\"" + sourceType + 		"\"," +
-                "	\"isRecharging\":	\"" + isRecharging + 	"\"," +
+                "\"sourceName\":\"" + sourceName + 		"\"," +
+                "\"sourceType\":\"" + sourceType + 		"\"," +
+                "\"isRecharging\":\"" + isRecharging + 	"\"," +
                 // "\"rechargeRate_kWh\":" + rechargeRate + "," +
-                "	\"batteryStatus\":	\"" + (battery != null ? battery.getStatus() : "No Battery") + "\"," +
+                "\"batteryStatus\":\"" + (battery != null ? battery.getStatus() : "No Battery") + "\"," +
                 "}";
     }
 }

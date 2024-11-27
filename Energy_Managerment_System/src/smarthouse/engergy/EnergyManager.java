@@ -13,7 +13,7 @@ public class EnergyManager {
     private static EnergyManager instance;
 
     private final Map<String, EnergySource> energySources = new HashMap<>();
-    private static final Logger logger = CustomLogger.getLogger();
+    private static final Logger logger = CustomLogger.getSysLogger();
     
     // Private constructor
     private EnergyManager() {}
