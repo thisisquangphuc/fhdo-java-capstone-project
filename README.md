@@ -16,7 +16,7 @@
 See requirement doc in doc/ folder
 
 ## Video Link
-https://drive.google.com/file/d/1CoTzADmLKoxc3ZiHcbq7O6iq52tEsPoH/view?usp=sharing 
+https://drive.google.com/file/d/14SCr8ksPGCI33Yph7VT-YnZeto7YZNrX/view?usp=sharing  
 
 ## Development Environment
 - **Programming Language**: Java
