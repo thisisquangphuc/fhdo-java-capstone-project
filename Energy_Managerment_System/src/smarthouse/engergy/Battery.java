@@ -6,7 +6,7 @@ import smarthouse.log.CustomLogger;
 
 public class Battery {
     // Declare logger
-    private static final Logger logger = CustomLogger.getLogger();
+    private static final Logger logger = CustomLogger.getSysLogger();
 
 	private final String id;
 	private double capacity;      
