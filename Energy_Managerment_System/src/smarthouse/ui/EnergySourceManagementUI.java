@@ -106,7 +106,7 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
 	        			String.format("%.3f", energySource.getEnergyConsumed()));
 	        } else {
 	        	consumedAmountLabel.get(energySourceID).setName(
-	        			String.format("%.3f", updateCurrentEnergyConsumed(batteryStatus, energySourceID))); 
+	        			String.format("%.3f", updateCurrentEnergyConsumed(energySourceID))); 
 	        }
 	        consumedAmountLabel.get(energySourceID).setText(
 	        		String.format("Current energy consumed: %s kWh", consumedAmountLabel.get(energySourceID).getName()));
@@ -308,7 +308,7 @@ public class EnergySourceManagementUI extends javax.swing.JPanel {
      * @param energySourceID
      * @return
      */
-    private Double updateCurrentEnergyConsumed(JSONObject batteryStatus, String energySourceID) {
+    private Double updateCurrentEnergyConsumed(String energySourceID) {
     	Double totalEnergyConsumed = energyConsumedAmount.get(energySourceID);
     	
     	List<String> deviceIDList = this.deviceManager.getAllDevicesIDs();
