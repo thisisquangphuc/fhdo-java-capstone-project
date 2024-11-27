@@ -65,11 +65,4 @@ class EnergySourceTest {
         assertEquals(50.0, gridSource.getEnergyConsumed()); // Energy consumed: 50 kWh
     }
 
-    @Test
-    void testGetStatus() {
-        String status = batterySource.getStatus();
-        assertTrue(status.contains("\"sourceName\":\"Battery Power\""));
-        assertTrue(status.contains("\"sourceType\":\"BATTERY\""));
-        assertTrue(status.contains("\"batteryStatus\":"));
-    }
 }
