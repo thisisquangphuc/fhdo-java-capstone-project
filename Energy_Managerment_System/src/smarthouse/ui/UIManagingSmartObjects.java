@@ -62,6 +62,9 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
 	private long timeTakenForCooler = 0;
 //	private Duration timeElapsedForFan;
 	
+	// EnergySourceManagementTimer
+	Boolean isTimerOn = true;
+	
     /**
      * Creates new form UIManagingSmartObjects
      */
@@ -72,6 +75,15 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         initComponents();
         scaleImage();
     }
+      
+   public UIManagingSmartObjects(EnergyManager energyManager, Boolean timerStatus) throws IOException {
+   		this.energyManager = energyManager;
+   		this.isTimerOn = timerStatus;
+//   	this.deviceManager = deviceManager;
+   		emsInit();
+   		initComponents();
+   		scaleImage();
+   }
     
     //============for testing============================
     public javax.swing.JButton getOnButton(String name){
@@ -455,9 +467,8 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         
         jTabbedPane.addTab("Devices Management", jPanel2);
         
-        this.energySourceMgmtPanel = new EnergySourceManagementUI(this.energyManager, this.deviceManager);
-
-        jTabbedPane.addTab("Energy Source Management", this.energySourceMgmtPanel);
+    	this.energySourceMgmtPanel = new EnergySourceManagementUI(this.energyManager, this.deviceManager, this.isTimerOn);
+    	jTabbedPane.addTab("Energy Source Management", this.energySourceMgmtPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -698,11 +709,9 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
     		}
     	}
     }//GEN-LAST:event_offLightButtonActionPerformed
-
     /**
      * @param args the command line arguments
      */
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton devicesButton;

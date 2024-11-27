@@ -29,7 +29,7 @@ class UIManagingSmartObjectsTest {
 		energyManager.addEnergySource(solar);
 		energyManager.addEnergySource(grid);
 		
-		 UI = new UIManagingSmartObjects(energyManager);
+		 UI = new UIManagingSmartObjects(energyManager, false);
 		 UI.setVisible(true);
 	}
 
