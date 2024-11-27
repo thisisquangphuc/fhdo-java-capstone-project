@@ -1,4 +1,29 @@
-# fhdo-java-capstone-project
+# JAVA CAPSTONE PROJECT - GROUP 8
+## Matriculation Number
+**Group 8**
+- Phuc Le Quang - 7222361
+- Quyen Ho - 7221978
+- Van Dao Nguyen - 7221965
+
+## Role Distribution
+
+| **Name and ID**            | **Role**                                                                                                     |
+|-----------------------------|-------------------------------------------------------------------------------------------------------------|
+| **Phuc Le Quang (7222361)** | - Create/Manage repository, review/merge code, resolve conflicts<br> - Implement logging feature, init configuration management<br> - Handle backend: Smart Objects, Energy Sources, Management classes,...<br> - Define unit tests<br> - Implement UML for regrading tasks, the component diagram<br> - Slide design for assigned tasks |
+| **Quyen Ho (7221978)**      | - Design and implement the User Interface for Managing Energy Sources<br> - Define unit tests<br> - Implement UML for regrading tasks<br> - Slide design for assigned tasks |
+| **Van Dao Nguyen (7221965)** | - Design and implement the User Interface for Managing Smart Objects<br> - Define unit tests<br> - Implement UML for regrading tasks<br> - Slide design for assigned tasks, record product video |
+## Document
+See requirement doc in doc/ folder
+
+## Video Link
+https://drive.google.com/file/d/1CoTzADmLKoxc3ZiHcbq7O6iq52tEsPoH/view?usp=sharing 
+
+## Development Environment
+- **Programming Language**: Java
+- **IDE**: Eclipse IDE
+- **Java Version**: [Java SE 12]
+- **Libraries/Frameworks**: None (this project uses standard Java libraries)
+
 
 # Simulation Rate Table
    | simulationRate (0-1) | Min Sleep Time (ms)    | Max Sleep Time (ms)    |
