@@ -15,7 +15,7 @@ import smarthouse.engergy.Battery;
 import smarthouse.engergy.EnergyManager;
 import smarthouse.engergy.EnergySource;
 import smarthouse.log.CustomLogger;
-
+import smarthouse.util.ConfigManager;
 
 import java.awt.Color;
 import java.awt.Image;
@@ -161,6 +161,17 @@ public class UIManagingSmartObjects extends javax.swing.JFrame {
         
     }
     private void emsInit() {   	
+         
+        ConfigManager initConfig = ConfigManager.getInstance();
+
+        //set simulation rate for devices
+        double fanRate = initConfig.getDouble("fan.simulation.rate", 1);
+        double heaterRate = initConfig.getDouble("heater.simulation.rate", 1);
+        double coolerRate = initConfig.getDouble("cooler.simulation.rate", 1);
+
+        fanDev.setSimulationRate(fanRate);
+        heaterDev.setSimulationRate(heaterRate);
+        coolerDev.setSimulationRate(coolerRate);
     	//device manager
     	deviceManager = new DeviceManager();
     	deviceManager.addDevice(fanDev);

@@ -50,10 +50,10 @@ public class Main {
 			EnergyManager energyManager = EnergyManager.getInstance();
 	
 			// Create Engery Sources
-			Battery battery1 = new Battery(100, 70);
+			Battery battery1 = new Battery(config.getDouble("powerbank.capacity", 100), config.getInt("powerbank.percentage", 1));
 			EnergySource powerBank = new EnergySource("Power Bank", EnergySource.EnergyType.BATTERY, battery1);
 	
-			Battery battery2 = new Battery(1000, 1);
+			Battery battery2 = new Battery(config.getDouble("solar.capacity", 100), config.getInt("solar.percentage", 1));
 			EnergySource solar = new EnergySource("Home Solar", EnergySource.EnergyType.SOLAR, battery2);
 	
 			EnergySource grid = new EnergySource("Grid Power", EnergySource.EnergyType.GRID);

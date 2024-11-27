@@ -21,7 +21,7 @@ public class SmartDevice implements Runnable {
     private boolean isOn;
     private boolean useIntegratedBattery = false;
     private Thread deviceThread;
-    private double consumedEnergy;
+    private double consumedEnergy=0.0;
     private String energySourceID;          // EnergyManager instance
     private String sourceName;
     private double simulationRate = 1.0;    // Default simulation rate

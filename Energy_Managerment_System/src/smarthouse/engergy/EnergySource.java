@@ -26,8 +26,11 @@ public class EnergySource {
     private Thread rechargeThread;
 
     // Time setting
-    private int charging_start_time = ConfigManager.getInstance().getIntProperty("charging.start_time", 10);
-    private int charging_end_time = ConfigManager.getInstance().getIntProperty("charging.end_time", 17);
+    private int charging_start_time = ConfigManager.getInstance().getInt("charging.start_time", 10);
+    private int charging_end_time = ConfigManager.getInstance().getInt("charging.end_time", 17);
+
+    private int simulationPeriod = ConfigManager.getInstance().getInt("charging.simulation.period", 1);
+    private double simulationAmount = ConfigManager.getInstance().getDouble("charging.simulation.amount", 10);
     // define Enger Type
     public enum EnergyType {
         SOLAR, GRID, BATTERY
@@ -135,7 +138,7 @@ public class EnergySource {
         rechargeThread = new Thread(() -> {
             while (isRecharging && isInRechargeTimeRange()) {
                 if (battery != null) {
-                    double amount = 10.0;
+                    double amount = simulationAmount;
                     // Use the Battery's charge method
                     battery.charge(amount); // Recharge by 1 kWh (or any other unit)
                     logger.info(String.format("Battery of source [%s] recharged by %.2f kWh. Current level: %.2f kWh", sourceName, amount, battery.getEnergyLevel()));
@@ -144,7 +147,8 @@ public class EnergySource {
                 }
     
                 try {
-                    Thread.sleep(1000); // Simulate a delay in recharging (1 second)
+                    int sleepTime = 1000 * simulationPeriod;
+                    Thread.sleep(sleepTime); // Simulate a delay in recharging (1 second)
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     return; // Exit the loop if interrupted

@@ -33,9 +33,17 @@ public class ConfigManager {
         return properties.getProperty(key, defaultValue);
     }
 
-    public int getIntProperty(String key, int defaultValue) {
+    public int getInt(String key, int defaultValue) {
         try {
             return Integer.parseInt(properties.getProperty(key, String.valueOf(defaultValue)));
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    public double getDouble(String key, double defaultValue) {
+        try {
+            return Double.parseDouble(properties.getProperty(key, String.valueOf(defaultValue)));
         } catch (NumberFormatException e) {
             return defaultValue;
         }

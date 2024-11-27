@@ -26,7 +26,7 @@ public class CustomLogger {
                 }
                 
                 // Create a FileHandler with rotation (max 5MB per file, 3 files to retain)
-                FileHandler fileHandler = new FileHandler("log_output/ems_app.log", 1 * 1024 * 1024, 3, true); // 5MB file size, 3 rotations
+                FileHandler fileHandler = new FileHandler("log_output/ems_app.log", 1 * 1024 * 1024, 3, true); // 1MB file size, 3 rotations
 
                 fileHandler.setFormatter(new SimpleFormatter() {
                     @Override
@@ -76,7 +76,7 @@ public class CustomLogger {
                 appLogger.setUseParentHandlers(false); // Avoid duplicate console logs
 
                 // Configure FileHandler for this Logger
-                FileHandler fileHandler = new FileHandler("log_output/app_log/" + name + ".log", true); // Append mode
+                FileHandler fileHandler = new FileHandler("log_output/app_log/" + name + ".log", 1 * 1024 * 1024, 3, true); // 1MB file size, 3 rotations
                 fileHandler.setFormatter(new SimpleFormatter() {
                     @Override
                     public String format(LogRecord record) {
