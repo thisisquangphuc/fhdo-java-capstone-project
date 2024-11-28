@@ -13,8 +13,8 @@ import org.junit.platform.suite.api.Suite;
 	EnergySourceTest.class,
 	DeviceManagerTest.class,
 	EnergyManagerTest.class,
-	UIManagingSmartObjectsTest.class,
-	EnergySourceManagementUITest.class} )
+	EnergySourceManagementUITest.class,
+	UIManagingSmartObjectsTest.class} )
 public class AllTests {
 
 	public static void main(String[] args) {
